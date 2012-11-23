@@ -1,9 +1,9 @@
 <?php 
 function test_master_error(){
-    $change0 = 'curl -v -X PUT -d groupId=0 http://192.168.1.23:8080/rest/v1/nvcr/nvrList/6ad2117c-bca6-4238-aedd-5113fc8a33b0';
-    $change1 = 'curl -v -X PUT -d groupId=1 http://192.168.1.23:8080/rest/v1/nvcr/nvrList/6ad2117c-bca6-4238-aedd-5113fc8a33b0';
-    $ipcReblance = 'curl -v -X POST -d id=0 -d scope=GroupId http://192.168.1.23:8080/rest/v1/nvcr/ipcRebalance';
-    $nvcrStates = 'curl -v -X GET http://192.168.1.23:8080/rest/v1/nvcr';
+    $change0 = 'curl -v -X PUT -d groupId=0 http://192.168.1.236:8080/rest/v1/nvcr/nvrList/b6598dc0-1760-494a-acb6-e610689176a8';
+    $change1 = 'curl -v -X PUT -d groupId=1 http://192.168.1.236:8080/rest/v1/nvcr/nvrList/b6598dc0-1760-494a-acb6-e610689176a8';
+    $ipcReblance = 'curl -v -X POST -d id=0 -d scope=GroupId http://192.168.1.236:8080/rest/v1/nvcr/ipcRebalance';
+    $nvcrStates = 'curl -v -X GET http://192.168.1.236:8080/rest/v1/nvcr';
     $count = 0;
     while (true) {
         unset($match);
@@ -11,7 +11,7 @@ function test_master_error(){
         /* 将23组id修改为0 */
         $res = exec($change0." 2>/dev/null;", $output);
         if ("</reason>" == $res){
-            echo "change nvr(192.168.1.23) to group 0(default) faild\t\treson: ".$output[2]."\n";
+            echo "change nvr(192.168.1.236) to group 0(default) faild\t\treson: ".$output[2]."\n";
             return false;
         }
         else{
@@ -49,8 +49,8 @@ function test_master_error(){
             }
             unset($match);
 
-            preg_match('/^\s*<undispatchIpcNum>([0-9]+)<\/undispatchIpcNum>$/', $output[14],$match);
-            if ($match[1] <= "1000"){
+            preg_match('/^\s*<undispatchIpcNum>([0-9]+)<\/undispatchIpcNum>$/', $output[15],$match);
+            if ($match[1] <= 500){
                 echo "reblance finished\n";
                 break;
             }
@@ -65,7 +65,7 @@ function test_master_error(){
         /* 将23组id修改为1 */
         $res = exec($change1." 2>/dev/null;", $output);
         if ("</reason>" == $res){
-            echo "change nvr(192.168.1.23) to group 1(group) faild\t\treson: ".$output[2]."\n";
+            echo "change nvr(192.168.1.236) to group 1(group) faild\t\treson: ".$output[2]."\n";
             return false;
         }
         else{
@@ -90,8 +90,8 @@ function test_master_error(){
             }
             unset($match);
 
-            preg_match('/^\s*<undispatchIpcNum>([0-9]+)<\/undispatchIpcNum>$/', $output[14],$match);
-            if ($match[1] == "0"){
+            preg_match('/^\s*<undispatchIpcNum>([0-9]+)<\/undispatchIpcNum>$/', $output[15],$match);
+            if ($match[1] == 0){
                 echo "dispatch finished\n";
                 break;
             }
