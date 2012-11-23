@@ -15,7 +15,7 @@ function test_rtspProxy(){
                 echo $key."\tFaild  \t".$value."\n";
                 if (1 != $key){
                     echo "ERROR\n";
-                    //return false;
+                    return false;
                 }
             }
         }
