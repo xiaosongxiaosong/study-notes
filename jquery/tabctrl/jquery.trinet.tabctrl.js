@@ -32,11 +32,11 @@
             return this;
         },
         show: function(index){
-            this.show();
-            methods.layout.call(this);
             if (null !== handles.show){
                 handles.show.call(this);
             }
+            this.show().attr("disabled", false);
+            methods.layout.call(this);
             methods.change.call(this,index);
             return this;
         },
