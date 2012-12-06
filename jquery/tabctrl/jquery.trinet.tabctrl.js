@@ -28,16 +28,19 @@
                 var obj = $(this).closest("div.tabsWindow");
                 methods.hide.call(obj);
             });
-            $(window).resize(methods.layout);
+            $(window).resize(function() {
+                var obj = $("div.tabsWindow");
+                methods.layout.call(obj);
+            });
             return this;
         },
         show: function(index){
             if (null !== handles.show){
                 handles.show.call(this);
             }
-            this.show().attr("disabled", false);
-            methods.layout.call(this);
+            this.show();
             methods.change.call(this,index);
+            methods.layout.call(this);
             return this;
         },
         hide: function(){
@@ -59,11 +62,8 @@
             return this;
         },
         layout: function(){
-            var visibleTabs = $("div.tabsWindow:visible");
-            if (visibleTabs.length > 0){
-                var tabsBodyHeight = visibleTabs.eq(0).height() - visibleTabs.children("div.windowTitle").eq(0).outerHeight(true) - 10;
-                visibleTabs.children("div.windowBody").css("height", tabsBodyHeight + "px");
-            }
+            var tabsBodyHeight = this.height() - this.children("div.windowTitle").eq(0).outerHeight(true) - 10;
+            this.children("div.windowBody").css("height", tabsBodyHeight + "px");
             return this;
         }
     };
