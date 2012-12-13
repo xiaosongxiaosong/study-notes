@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jQuery Trinet Context Menu</title>
+    <link rel="stylesheet" href="../trinet.plugin.css">
+    <script type="text/javascript" src="../jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="jquery.trinet.contextmenu.js"></script>
+    <script>
+    function itemHandle1(){
+        alert("itemHandle1");              
+    }
+    function itemHandle2(){
+        alert("itemHandle2");              
+    }
+    function itemHandle3(){
+        alert("itemHandle3");              
+    }
+    function itemHandle4(){
+        alert("itemHandle4");              
+    }
+    function itemHandle5(){
+        alert("itemHandle5");              
+    }
+    function itemHandle6(){
+        alert("itemHandle6");              
+    }
+    function itemHandle7(){
+        alert("itemHandle7");              
+    }
+    function itemHandle8(){
+        alert("itemHandle8");              
+    }
+    function mousedownHandle(){
+        //alert("mousedownHandle");              
+    }
+    function showHandle(){
+        //alert("showHandle");              
+    }
+    function hideHandle(){
+        //alert("hideHandle");              
+    }
+    function itemHandle(){
+        alert("aaa");
+    }
+    $(function() {
+        $(".cntxtMenu").contextmenu('init', {
+            'menu'      : 'contextmenu',
+            'parent'    : 'parent_div',
+            'ids'       : ['id1', 'id2', null, 'id3', 'id4', null, null, null, 'id7', 'id8'],
+            'items'     : ['item1', 'item2', null, 'item3', 'item4', 'item5', 'item6', null, 'item7', 'item8'],
+            'handles'   : [itemHandle1, itemHandle2, itemHandle3, itemHandle4, itemHandle5, itemHandle6, itemHandle7, itemHandle8],
+            'mousedown' : mousedownHandle,
+            'show'      : showHandle,
+            'hide'      : hideHandle
+        });
+    });
+    </script>
+</head>
+<body>
+<div id="showButton">
+    <div id="parent_div">
+        <div class="cntxtMenu" class="" style="width: 100%; height: 300px; background-color: #12D221;" oncontextmenu="return false;">
+            <p>click me with the right mouse button</p>
+            <p>click me with the right mouse button</p>
+            <p>click me with the right mouse button</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

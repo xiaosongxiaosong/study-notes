@@ -83,4 +83,81 @@ div.windowBody{
 div.windowBody > div{
     display: none;
 }
+
+
+div.popupWindow{
+    display: none;
+    position: absolute;
+    z-index: 2;
+    border: 1px solid #666666;
+    padding: 10px;
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    
+    -moz-box-shadow:3px 3px 4px #666666;
+    -webkit-box-shadow:3px 3px 4px #666666;
+    box-shadow:3px 3px 4px #666666;
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color="#666666");
+}
+.cntxtMenu{
+    cursor: url(/images/context_menu.png) 4 6, url(/images/context_menu.cur), default;
+}
+
+:root .cntxtMenu{
+    cursor: context-menu\9;
+}
+div.contextMenu
+{
+    padding: 2px;
+    border-radius: 0px;
+    width: auto;
+    height: auto;
+    background-color: #FFFFFF;
+    font-size: 13px;
+}
+div.contextMenu > ul{
+    margin: 2px;
+    padding-left: 0px;
+    list-style-type: none;
+    cursor: default;
+}
+div.contextMenu > ul > li > span{
+    display: block;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 20px;
+    width: 120px;
+    cursor: pointer;
+    background-color: #FFFFFF;
+    color: #000000;
+}
+div.contextMenu > ul > li > span:hover{
+    background-color: #1665CB;
+    color: #FFFFFF;
+}
+div.contextMenu > ul > li{
+    padding-top: 2px;
+    height: 20px;
+}
+div.contextMenu > ul > li.separator
+{
+    padding-top: 0px;
+    border-top: 1px solid #AAAAAA;
+    height: 0px;
+}
+#contextMenuStatus{
+    background: url(/images/chart_curve.png) no-repeat 2px 2px;
+}
+#contextMenuDetail{
+    background: url(/images/cog.png) no-repeat 2px 2px;
+}
+#contextMenuSynTime{
+    background: url(/images/clock.png) no-repeat 2px 2px;
+}
+#contextMenuDeleteIpc{
+    background: url(/images/cog_delete.png) no-repeat 2px 2px;
+}
+#contextMenuDeleteRecord{
+    background: url(/images/film_delete.png) no-repeat 2px 2px;
+}
 ​
