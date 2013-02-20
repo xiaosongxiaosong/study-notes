@@ -12,7 +12,7 @@ class IPC{
     /* 添加IPC */
     public $groupId = '0';
     public $ip = '192.168.1.145';
-    public $controlPoint ='rtsp://192.168.1.238:8561/video';
+    public $controlPoint ='rtsp://192.168.1.238:8555/video';
     public $type = 'rtsp';
     public $model = 'unknown';
     public $vendor = 'unknown';
@@ -86,8 +86,7 @@ class IPC{
     /* 添加IPC */
     public function addIpc(){
         for($i = $this->index; $i < $this->num + $this->index; $i++){
-            if($i < 10)
-            {
+            if($i < 10){
                 $ipcName = $this->name.'0000'.$i;
                 $ipcId = $this->id.'0000'.$i;
             }
@@ -128,8 +127,7 @@ class IPC{
     /* 修改IPC */
     public function  modIpc(){
         for($i = $this->index; $i < $this->num + $this->index; $i++){
-            if($i < 10)
-            {
+            if($i < 10){
                 $ipcName = $this->name.'0000'.$i;
                 $ipcId = $this->id.'0000'.$i;
             }
@@ -163,8 +161,7 @@ class IPC{
     /* 删除IPC */
     public function delIpc(){
         for($i = $this->index; $i < $this->num + $this->index; $i++){
-            if($i < 10)
-            {
+            if($i < 10){
                 $ipcName = $this->name.'0000'.$i;
                 $ipcId = $this->id.'0000'.$i;
             }

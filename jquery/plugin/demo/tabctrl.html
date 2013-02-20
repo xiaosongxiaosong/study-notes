@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Trinet jQuery plugin demo</title>
+    <link rel="stylesheet" href="../jquery.trinet.plugin.css">
+</head>
+<body>
+<a href="../index.html">返回</a>
+<div id="showButton">click to show tabs window</div>
+<div id="tabs" class="tabsWindow">
+    <div class="windowTitle">
+        <ul class="tabs">
+            <li><a href="#">tabs1</a></li>
+            <li><a href="#">tabs1</a></li>
+            <li><a href="#">tabs1</a></li>
+        </ul>
+        <a href="#" class="closeWindow" title="close"></a>
+        <a href="#" class="refreshData" title="refresh"></a>
+    </div>
+    <div class="windowBody">
+        <div><p>tabs1</p></div>
+        <div><p>tabs2</p></div>
+        <div><p>tabs3</p></div>    
+    </div>
+</div>
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery.trinet.plugin.js"></script>
+<script>
+function showtab1(){
+    alert("show tab1");              
+}
+function showtab2(){
+    alert("show tab2");              
+}
+function showtab3(){
+    alert("show tab3");              
+}
+function refreshtab1(){
+    alert("refreshtab1");              
+}
+function refreshtab2(){
+    alert("refreshtab2");              
+}
+function refreshtab3(){
+    alert("refreshtab3");              
+}
+function showTabs(){
+    alert("showTabs");
+}
+function hideTabs(){
+    alert("hideTabs");          
+}
+$(function() {
+    plugin.tabctrl();
+    $("#tabs").tabctrl('init', {
+        'change':[showtab1, showtab2, showtab3],
+        'refresh':[refreshtab1, refreshtab2, refreshtab3],
+        'show':showTabs,
+        'hide':hideTabs
+    });
+    $("#showButton").click(function(){
+        $("#tabs").tabctrl('show', 0);
+    })
+});
+</script>
+</html>
