@@ -147,14 +147,20 @@ var plugin = (function($, plugin){
 				settings.menu = $("#" + settings.id[0]);
 				settings.position[2] = settings.menu.outerWidth();
 				settings.position[3] = settings.menu.outerHeight();
-				settings.menu.on("mouseover", "li > span", function(){
+				settings.menu.bind("click contextmenu", function(e){
+					e.stopPropagation();
+					return false;
+				}).on("mouseover", "li."+settings.itemClass, function(){
 					this.style.backgroundColor = "#1665CB";
 					this.style.color = "#FFFFFF";
-				}).on("mouseout", "li > span", function(){
+				}).on("mouseout", "li."+settings.itemClass, function(){
 					this.style.backgroundColor = "#FFFFFF";
 					this.style.color = "#000000";
-				}).on("click", "li > span", function(e){
-					var index = $(this).closest("ul").find("li > span").index(this);
+				}).on("click", "li."+settings.itemClass, function(e){
+					if (null !== settings.menu){
+						methods.hide.call(settings.menu);
+					}
+					var index = $(this).parent("ul").find("li").index(this);
 					if (null !== settings.item[index].action){
 						settings.item[index].action.call(this);
 					}

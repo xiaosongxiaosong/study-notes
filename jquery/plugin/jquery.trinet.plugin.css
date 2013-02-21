@@ -121,10 +121,11 @@ div.contextMenu > ul{
     cursor: default;
 }
 li.menuItem{
-    padding-top: 2px;
     height: 20px;
 }
 li.separator{
+    margin-top: 3px;
+    margin-bottom: 3px;
     border-top: 1px solid #AAAAAA;
     height: 0px;
 }
