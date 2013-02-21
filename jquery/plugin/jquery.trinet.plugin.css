@@ -102,7 +102,6 @@ div.popupWindow{
 .cntxtMenu{
     cursor: url(/images/context_menu.png) 4 6, url(/images/context_menu.cur), default;
 }
-
 :root .cntxtMenu{
     cursor: context-menu\9;
 }

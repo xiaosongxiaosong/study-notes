@@ -23,14 +23,14 @@
 $(function() {
     plugin.contextMenu();
     $(".cntxtMenu").contextMenu('init', {
-        id : ["cntxtMenu", "parent_div"],
+        id : ["cntxtMenu", "parent_div", "p"],
         //handles : [function (){alert("aaa");}, function (){alert("bbb");}, function (){alert("ccc");}],
         item : [
             {label:'Some Item',     icon:'../../images/shopping-basket.png',             action:function() { alert('clicked 1') } },
             {label:'Another Thing', icon:'../../images/receipt-text.png',                action:function() { alert('clicked 2') } },
             {label:'Blah Blah',     icon:'../../images/book-open-list.png',              action:function() { alert('clicked 3') } },
             null, // divider
-            {label:'Sheep',         icon:'../../images/application-monitor.png',         action:function() { alert('clicked 4') } , hide: true},
+            {label:'Sheep',         icon:'../../images/application-monitor.png',         action:function() { alert('clicked 4') } , hide: false},
             {label:'Cheese',        icon:'../../images/bin-metal.png',                   action:function() { alert('clicked 5') } },
             {label:'Bacon',         icon:'../../images/magnifier-zoom-actual-equal.png', action:function() { alert('clicked 6') } },
             null, // divider

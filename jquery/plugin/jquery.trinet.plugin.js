@@ -86,10 +86,11 @@ var plugin = (function($, plugin){
 				$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
 			}
 		};
+		return plugin;
 	};
 	plugin.contextMenu = function(){
 		var settings = {
-			id			: [null, null],			//menu, parent
+			id			: [null, null, null],			//menu, parent
 			menu		: null,
 			menuClass   : "popupWindow contextMenu",
 			itemClass	: "menuItem",
@@ -101,7 +102,7 @@ var plugin = (function($, plugin){
 		var methods = {
 			init: function(options){
 				settings = $.extend(settings, options);
-				this.bind("contextmenu", function(e){
+				this.on("contextmenu", settings.id[2], function(e){
 					if (null !== settings.handles[2]){
 						settings.handles[2].call(this);
 					}
@@ -130,7 +131,7 @@ var plugin = (function($, plugin){
 					if (null === settings.item[i]){
 						str += '<li class="separator"></li>';
 					}
-					else if (undefined === settings.item[i].hide){
+					else if (undefined === settings.item[i].hide || true !== settings.item[i].hide){
 						if (null === settings.item[i].icon){
 							str += '<li class="'+ settings.itemClass + '"><span>'+ settings.item[i].label +'</span></li>';
 						}
@@ -198,6 +199,7 @@ var plugin = (function($, plugin){
 				$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
 			}
 		};
+		return plugin;
 	};
 	return plugin;
 })(jQuery, plugin || {});
