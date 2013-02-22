@@ -92,8 +92,7 @@ var plugin = (function($, plugin){
 		var settings = {
 			id			: [null, null, null],			//menu, parent
 			menu		: null,
-			menuClass   : "popupWindow contextMenu",
-			itemClass	: "menuItem",
+			menuClass   : ["popupWindow contextMenu", "menuItem", " menuHiddenItem"],
 			seperator   : "separator",
 			handles     : [null, null, null],     		//show,hide,mousedown
 			position    : [0, 0, 0, 0],     			//left,top,width,height
@@ -125,20 +124,24 @@ var plugin = (function($, plugin){
 				if (null !== settings.menu){
 					return settings.menu;
 				}
-				var str = '<div id="'+ settings.id[0] +'" class="'+ settings.menuClass +'"><ul>';
+				var str = '<div id="'+ settings.id[0] +'" class="'+ settings.menuClass[0] +'"><ul>';
 				var i = 0;
 				for (i = 0; i < settings.item.length; i++){
 					if (null === settings.item[i]){
 						str += '<li class="separator"></li>';
 					}
-					else if (undefined === settings.item[i].hide || true !== settings.item[i].hide){
-						if (null === settings.item[i].icon){
-							str += '<li class="'+ settings.itemClass + '"><span>'+ settings.item[i].label +'</span></li>';
+					else{
+						var style = "";
+						var isShow = "";
+						if (undefined !== settings.item[i].hide && true === settings.item[i].hide){
+							isShow += settings.menuClass[2];
 						}
-						else{
-							str += '<li class="'+ settings.itemClass +'"><span style="background: url('+ settings.item[i].icon +') no-repeat 2px 2px;">'+ 
-								settings.item[i].label +'</span></li>';
+						if (null !== settings.item[i].icon){
+							style += 'background: url('+ settings.item[i].icon +') no-repeat 2px 2px;'
 						}
+
+						str += '<li class="'+ settings.menuClass[1] + isShow + '"><span style="'+ style +'">'+ 
+							settings.item[i].label +'</span></li>';
 					}
 				}
 				str += '</ul></div>';
@@ -150,13 +153,13 @@ var plugin = (function($, plugin){
 				settings.menu.bind("click contextmenu", function(e){
 					e.stopPropagation();
 					return false;
-				}).on("mouseover", "li."+settings.itemClass, function(){
+				}).on("mouseover", "li."+settings.menuClass[1], function(){
 					this.style.backgroundColor = "#1665CB";
 					this.style.color = "#FFFFFF";
-				}).on("mouseout", "li."+settings.itemClass, function(){
+				}).on("mouseout", "li."+settings.menuClass[1], function(){
 					this.style.backgroundColor = "#FFFFFF";
 					this.style.color = "#000000";
-				}).on("click", "li."+settings.itemClass, function(e){
+				}).on("click", "li."+settings.menuClass[1], function(e){
 					if (null !== settings.menu){
 						methods.hide.call(settings.menu);
 					}
