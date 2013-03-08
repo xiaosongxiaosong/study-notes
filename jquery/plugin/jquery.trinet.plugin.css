@@ -121,10 +121,17 @@ div.contextMenu > ul{
 	cursor: default;
 }
 li.menuItem{
+	padding-top: 2px;
 	height: 20px;
+	background-color: #FFFFFF;
+	color: #000000;
 }
 li.menuHiddenItem{
 	display: none;
+}
+li.menuItem:hover{
+	background-color: #1665CB;
+	color: #FFFFFF;
 }
 li.separator{
 	margin-top: 3px;
@@ -139,11 +146,60 @@ li.menuItem > span{
 	padding-left: 20px;
 	width: 120px;
 	cursor: pointer;
-	background-color: #FFFFFF;
-	color: #000000;
 }
-li.menuItem > span:hover{
-	background-color: #1665CB;
+
+table.gridTable{
+	width: 100%;
+	table-layout: fixed;
+}
+tr.gridTr{
+	adisplay: none;
+}
+tr.gridTr:hover{
+	background-color: #FFFFDD;
+}
+tr.gridTrOdd{
+	background-color: #EFEFEF;
+}
+tr.gridTrChecked{
+	background-color: #507AAA;
 	color: #FFFFFF;
+}
+tr.gridTrChecked:hover{
+	background-color: #507AAA;
+}
+tr.gridTrChecked .linkOnText{
+	color: #FFFFFF;
+	text-decoration: none;
+}
+tr.gridTrChecked .linkOnText:hover{
+	text-decoration: underline;
+}
+.linkOnText {
+	color: #2A5685;
+	text-decoration: none;
+	cursor: pointer;
+}
+.linkOnText:hover {
+	color: #C61A1A;
+	text-decoration: underline;
+}
+input.pagingBtn{
+	display: block;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    width: 16px;
+    height: 16px;
+    background: #FFFFFF no-repeat;
+    cursor: pointer;
+}
+span.pagingNum {
+	color: #2A5685; 
+	text-decoration: underline;
+}
+span.currentPagingNum {
+	color: #000000; 
+	text-decoration: none;
 }
 ​

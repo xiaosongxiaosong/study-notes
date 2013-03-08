@@ -1,16 +1,17 @@
 /*!
  * Trinet plugin v1.0 
- *  
+ *
  */
-var plugin = (function($, plugin){
-	plugin.tabctrl = function(){
+"use strict";
+var plugin = (function ($, plugin) {
+	plugin.tabctrl = function() {
 		var handles = {
-			'index'     : 0,
-			'refresh'   : null,
-			'change'    : null,
-			'show'      : null,
-			'hide'      : null,
-			'layout'    : null
+			'index'		: 0,
+			'refresh'	: null,
+			'change'	: null,
+			'show'		: null,
+			'hide'		: null,
+			'layout'	: null
 		};
 		var methods = {
 			init: function(options){
@@ -83,7 +84,7 @@ var plugin = (function($, plugin){
 				return methods.init.apply( this, arguments );
 			} 
 			else {
-				$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+				$.error( 'Method ' + method + ' does not exist on jQuery.tooltip' );
 			}
 		};
 		return plugin;
@@ -92,10 +93,10 @@ var plugin = (function($, plugin){
 		var settings = {
 			id			: [null, null, null],			//menu, parent
 			menu		: null,
-			menuClass   : ["popupWindow contextMenu", "menuItem", " menuHiddenItem"],
-			seperator   : "separator",
-			handles     : [null, null, null],     		//show,hide,mousedown
-			position    : [0, 0, 0, 0],     			//left,top,width,height
+			menuClass	: ["popupWindow contextMenu", "menuItem", " menuHiddenItem"],
+			seperator	: "separator",
+			handles		: [null, null, null],		 	//show,hide,mousedown
+			position	: [0, 0, 0, 0],		 			//left,top,width,height
 			item : []
 		};
 		var methods = {
@@ -205,9 +206,218 @@ var plugin = (function($, plugin){
 				return methods.init.apply( this, arguments );
 			} 
 			else {
-				$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+				$.error( 'Method ' + method + ' does not exist on jQuery.tooltip' );
 			}
 		};
+		return plugin;
+	};
+
+	plugin.pagingBar = function(){
+		if ($.pagingBar){
+			return true;
+		}
+		var settings = {
+			id			: "paging_bar",
+			pageClass	: ["pagingBtn", "pagingIpt", "pagingInfo", "pagingNum", "currentPagingNum"],
+			handles		: [refreshGridData, utils.layout],
+			num			: {max: 100, paginal: 25, curr: 0, total: 1,  num: 0}
+		};
+		var methods = {
+			init: function(options){
+				settings = $.extend(settings, options);
+
+				methods.loadTable();
+
+				$("#" + settings.id).on("click", "input." + settings.pageClass[0], function(e){
+					var pagingBtn = $("#" + settings.id + " input." + settings.pageClass[0]);
+					var index = pagingBtn.index(this);
+					if ("disabled" == pagingBtn.eq(0).attr("disabled") || !methods.paging(index)){
+						return true;
+					}
+					pagingBtn.eq(0).attr("disabled", true);
+					settings.handles[0]();
+				}).on("keyup", "input." + settings.pageClass[1], function(e){
+					if(e.keyCode == 37 || e.keyCode == 39){
+						return true;
+					}
+					this.value = this.value.replace(/\D/g,"");	
+				}).on("keypress", "input." + settings.pageClass[1], function(e){
+					if ("disabled" == $("#" + settings.id + " input." + settings.pageClass[0]).eq(0).attr("disabled")){
+						return true;
+					}
+					if(e.keyCode == 13){
+						var page = parseInt(this.value, 10) - 1;
+
+						if (page < 0 || page >= settings.num.total){
+							return true;
+						}
+						settings.num.curr = page;
+						$("#" + settings.id + " input." + settings.pageClass[0]).eq(0).attr("disabled", true);
+						settings.handles[0]();
+					}
+					return true;
+				}).on("click", "span." + settings.pageClass[3], function(e){
+					var paginalNum = parseInt($(this).html(), 10);
+					if (paginalNum == settings.num.paginal){
+						return false;
+					}
+					$("span." + settings.pageClass[3]).removeClass(settings.pageClass[4]);
+					$(this).addClass(settings.pageClass[4]);
+					settings.num.paginal = paginalNum;
+					var totalPage = Math.ceil(settings.num.num / settings.num.paginal);
+					if (settings.num.curr >= totalPage){
+						settings.num.curr = totalPage - 1;
+					}
+					$("#" + settings.id + " input." + settings.pageClass[0]).eq(0).attr("disabled", true);
+					settings.handles[0]();
+
+					$.ajax({
+						url: "/ajaxCall.php",
+						type: "post",
+						data: "paginalNum=" + paginalNum
+					});
+				});
+				methods.load();
+
+				return $;
+			},
+			paging: function(index){
+				switch (index){
+					case 0: 
+						if (settings.num.curr < 0 || settings.num.curr >= settings.num.total){
+							settings.num.curr = 0;
+						}
+						break;
+					case 1: 
+						settings.num.curr = 0;
+						break;
+					case 2: 
+						if (settings.num.curr <= 0){
+							return false;
+						} 
+						settings.num.curr--;
+						break;
+					case 3: 
+						if (settings.num.curr >= settings.num.total - 1){
+							return false;
+						}
+						settings.num.curr++;
+						break;
+					case 4: 
+						settings.num.curr = settings.num.total - 1;
+						break;
+					default:
+						return false;
+						break;
+				};
+				return true;
+			},
+			set: function(start, total){
+				start = parseInt(start, 10);
+				total = parseInt(total, 10);
+				settings.num.curr = Math.floor(start / settings.num.paginal);
+				settings.num.total = Math.ceil(total / settings.num.paginal);;
+				settings.num.num = total;
+				return $;
+			},
+			get: function(){
+				return settings.num;
+			},
+			show: function(){
+				var pagingInfo = $("#" + settings.id + " span." + settings.pageClass[2]);
+				pagingInfo.eq(0).html(settings.num.curr + 1);
+				pagingInfo.eq(1).html(settings.num.total);
+				pagingInfo.eq(2).html(settings.num.num);
+
+				var pagingBtn = $("#" + settings.id + " input." + settings.pageClass[0]);
+				pagingBtn.eq(0).attr("disabled", false);
+				if (0 == settings.num.curr){
+					pagingBtn.eq(1).attr("disabled", true);
+					pagingBtn.eq(2).attr("disabled", true);
+				}
+				else{
+					pagingBtn.eq(1).attr("disabled", false);
+					pagingBtn.eq(2).attr("disabled", false);
+				}
+
+				if (settings.num.curr >= settings.num.total -1){
+					pagingBtn.eq(3).attr("disabled", true);
+					pagingBtn.eq(4).attr("disabled", true);
+				}
+				else{
+					pagingBtn.eq(3).attr("disabled", false);
+					pagingBtn.eq(4).attr("disabled", false);
+				}
+				settings.handles[1]();
+				return $;
+			},
+			load: function(){
+				var paginalArray = new Array(25, 50, 100);
+				$("span." + settings.pageClass[3]).removeClass(settings.pageClass[4]);
+				for (var i = 0; i < 3; i++){
+					if (paginalArray[i] == settings.num.paginal){
+						$("span." + settings.pageClass[3]).eq(i).addClass(settings.pageClass[4]);
+						break;
+					}
+				}
+			},
+			loadTable: function(){
+				$("#checkAllGridTr").click(function(){
+					var trObj = $("tr.gridTr").has("input:enabled:visible");
+					if (this.checked == true){
+						trObj.find("td.gridCheckbox > input").attr("checked", true);
+						trObj.addClass("gridTrChecked");
+						trObj.find("span.linkOnText").addClass("linkOnTextChecked");
+					}
+					else{
+						trObj.find("td.gridCheckbox > input").attr("checked", false);
+						trObj.removeClass("gridTrChecked");
+						trObj.find("span.linkOnText").removeClass("linkOnTextChecked");
+					}
+				});
+
+				$("tr.gridTr:odd").addClass("gridTrOdd");
+
+				$("table.gridTable").on("click", "tr.gridTr", function (event){
+					var trObj = $(this);
+					if (0 == trObj.find("td.gridCheckbox > input:enabled").length){
+						return false;
+					}
+					if (false == trObj.hasClass("gridTrChecked")){
+						trObj.find("td.gridCheckbox > input").attr("checked", true);
+						trObj.addClass("gridTrChecked");
+					}
+					else{
+						trObj.find("td.gridCheckbox > input").attr("checked", false);
+						trObj.removeClass("gridTrChecked");
+					}
+
+					var checkedNum = $("tr.gridTr").find("td.gridCheckbox:visible > input:enabled:checked").length;
+					var chckedboxNum = $("td.gridCheckbox:visible > input:enabled").length;
+					if (chckedboxNum == checkedNum){
+						$("#checkAllGridTr").attr("checked", true);
+					}
+					else if (0 == checkedNum){
+						$("#checkAllGridTr").attr("checked", false);
+					}
+				});
+			}
+		};
+	 
+		$.extend({
+			pagingBar: function() {
+				var method = arguments[0];
+				if ( methods[method] ) {
+					return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
+				} 
+				else if ( typeof method === 'object' || ! method ) {
+					return methods.init.apply( this, arguments );
+				} 
+				else {
+					$.error( 'Method ' + method + ' does not exist on jQuery.tooltip' );
+				}
+			}
+		});
 		return plugin;
 	};
 	return plugin;
