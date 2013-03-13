@@ -7,6 +7,7 @@
 </head>
 <body>
 <a href="../index.html">返回</a>
+<input type="button" id="show_index" value="显示index" />
 <div id="showButton">click to show tabs window</div>
 <div id="tabs" class="tabsWindow">
     <div class="windowTitle">
@@ -62,7 +63,10 @@ $(function() {
     });
     $("#showButton").click(function(){
         $("#tabs").tabctrl('show', 0);
-    })
+    });
+    $("#show_index").click(function(){
+        alert($("#tabs").tabctrl('get'));
+    });
 });
 </script>
 </html>
