@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Trinet jQuery plugin demo</title>
+	<link rel="stylesheet" href="../jquery.trinet.plugin.css">
+</head>
+<body>
+<p><a href="../index.html">返回</a></p>
+<div id="contentBody" style="display: block;">
+	<p>进度控制</p>
+	<input type="text" id="total_num" value="100"/>
+	<input type="button" id="show_progcess" value="开始" /><br />
+	<input type="button" id="success" value="成功" />
+	<input type="button" id="faild" value="失败" />
+	<p>百分比进度窗口</p>
+	<input type="button" id="show_rate" value="开始" /><br />
+	<input type="text" id="rate_num" />
+	<input type="button" id="set_rate" value="设置" /><br />
+	<div id="progress_rate" class="popupWindow progressRate">
+		<div>
+			<div>正在<span class="progressInfo"></span>...</div>
+			<div>
+				共<span class="progressInfo"></span>个, 
+				已完成<span class="progressInfo"></span>个, 
+				失败<span class="progressInfo"></span>个.
+			</div>
+		</div>
+		<div class="progressBar"><div></div></div>
+		<div>
+			<input type="button" class="progressBtn" disabled="disabled" value="确定" />
+			<input type="button" class="progressBtn" value="取消" />
+		</div>
+	</div>
+	<div id="progress" class="popupWindow progressRate">
+		<div>
+			<div>正在<span class="progressInfo"></span>...</div>
+			<div>
+				已完成<span class="progressInfo"></span>%.
+			</div>
+		</div>
+		<div class="progressBar"><div></div></div>
+		<div>
+			<input type="button" class="progressBtn" value="确定" />
+			<input type="button" class="progressBtn" value="取消" />
+			<input type="button" class="progressBtn" value="忽略" />
+		</div>
+	</div>
+</div>
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery.trinet.plugin.js"></script>
+<script>
+$(function() {
+	plugin.progressRate();
+	var current = null;
+	$("#show_progcess").click(function(){
+		$("#progress_rate").progressRate("init", {confirm: "是否停止操作？"});
+		current = "progress_rate";
+		if (false == $("#progress_rate").progressRate("set", $("#total_num").val())){
+			alert("输入正确的total数量");
+		}
+		$("#progress_rate").progressRate("show", "累加");
+	});
+	$("#success").click(function(){
+		var res = $("#progress_rate").progressRate("add", true);
+		if (false == res){
+			alert(res);
+		}
+	});
+	$("#faild").click(function(){
+		var res = $("#progress_rate").progressRate("add", false);
+		if (false == res){
+			alert(res);
+		}
+	});
+	// $("#progress").progressRate("init", {confirm: "是否停止操作？"});
+	$("#show_rate").click(function(){
+		$("#progress").progressRate("init", {confirm: "是否停止操作？"});
+		current = "progress";
+		$("#progress").progressRate("show", "百分比");
+	});
+	$("#set_rate").click(function(){
+		var res = $("#progress").progressRate("setRate", $("#rate_num").val());
+		if (false == res){
+			alert(res);
+		}
+	});
+});
+</script>
+</html>

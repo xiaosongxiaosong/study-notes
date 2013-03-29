@@ -3,7 +3,7 @@
  *
  */
 "use strict";
-var plugin = (function($, plugin) {
+;var plugin = (function($, plugin) {
 	plugin.tabctrl = function() {
 		var handles = {
 			'index': false,
@@ -72,6 +72,7 @@ var plugin = (function($, plugin) {
 				if (null !== handles.layout) {
 					handles.layout.call(this);
 				}
+				this.css({left: ($("body").width() - this.width()) / 2 + "px"});
 				return this;
 			},
 			get: function(){
@@ -161,6 +162,8 @@ var plugin = (function($, plugin) {
 					this.style.backgroundColor = "#FFFFFF";
 					this.style.color = "#000000";
 				}).on("click", "li." + settings.menuClass[1], function(e) {
+					this.style.backgroundColor = "#FFFFFF";
+					this.style.color = "#000000";
 					if (null !== settings.menu) {
 						methods.hide.call(settings.menu);
 					}
@@ -272,6 +275,7 @@ var plugin = (function($, plugin) {
 					$(this).addClass(settings.pageClass[4]);
 					settings.num.paginal = paginalNum;
 					var totalPage = Math.ceil(settings.num.num / settings.num.paginal);
+					totalPage = totalPage < 1 ? 1 : totalPage;
 					if (settings.num.curr >= totalPage) {
 						settings.num.curr = totalPage - 1;
 					}
@@ -429,12 +433,12 @@ var plugin = (function($, plugin) {
 
 	plugin.ajaxLoader = function() {
 		if ($.ajaxLoader) {
-			return true;
+			return plugin;
 		}
 		var settings = {
 			id: ["contentBody", "ajax_loader"],
 			button: "dataSubmitButton",
-			load: "loading",
+			load: "loading"
 		};
 		var methods = {
 			init: function(options) {
@@ -468,6 +472,134 @@ var plugin = (function($, plugin) {
 				}
 			}
 		});
+		return plugin;
+	};
+	plugin.progressRate = function(){
+		var settings = {
+			id: "progress_rate",
+			progClass: ["progressRate", "progressInfo",  "progressBar", "progressBtn"],
+			handles: [null, null, null], //sure,cancel,ignore
+			layout: null,
+			confirm: "Do you sure to stop this operation?"
+		};
+		var methods = {
+			init: function(options) {
+				settings = $.extend(settings, options);
+				var id = this.attr("id");
+				if (undefined !== id && "" !== id){
+					settings.id = id;
+				}
+				this.on("click", "input." + settings.progClass[3], function(){
+					var $this = $("#" + settings.id);
+					var index = $this.find("input." + settings.progClass[3]).index(this);
+					if (1 === index && false === confirm(settings.confirm)){
+						return true;
+					}
+					if (undefined !== settings.handles[index] && null !== settings.handles[index]){
+						settings.handles[index]();
+					}
+					methods.hide.apply($this);
+					return true;
+				});
+				return this;
+			},
+			set: function(total){
+				if (true == isNaN(total) || total <= 0){
+					return false;
+				}
+				this.find("span." + settings.progClass[1]).eq(1).html(total);
+				return true;
+			},
+			show: function(str){
+				if (undefined == str || "" == str){
+					return false;
+				}
+				var progInfo = this.find("span." + settings.progClass[1]);
+				var progBtn = this.find("input." + settings.progClass[3]);
+				progInfo.eq(0).html(str);
+				if (progInfo.length > 2){
+					progInfo.slice(2).html(0);
+				}
+				else{
+					progInfo.eq(1).html(0);
+				}
+				this.find("div." + settings.progClass[2] + " > div").css({width: "0%"});
+				progBtn.eq(0).attr("disabled", true);
+				progBtn.slice(1).attr("disabled", false);
+				methods.layout.call(this);
+				this.attr("disabled", false).show();
+				return this;
+			},
+			layout: function(){
+				if (null !== settings.layout){
+					settings.layout.apply(this);
+				}
+				this.css({left: ($("body").width() - this.width()) / 2 + "px"});
+			},
+			hide: function(){
+				var progInfo = this.find("span." + settings.progClass[1]);
+				progInfo.slice(1).html(0);
+				var progBtn = this.find("input." + settings.progClass[3]);
+				progBtn.eq(0).attr("disabled", true);
+				progBtn.slice(1).attr("disabled", false);
+				this.hide();
+			},
+			add: function(){
+				if (true == methods.isFinish.call(this)){
+					return false;
+				}
+				var progInfo = this.find("span." + settings.progClass[1]);
+				var total = parseInt(progInfo.eq(1).html());
+				var finish = parseInt(progInfo.eq(2).html()) + 1;
+				progInfo.eq(2).html(finish);
+				if (arguments.length > 0 && false === arguments[0]){
+					var error = parseInt(progInfo.eq(3).html()) + 1;
+					progInfo.eq(3).html(error);
+				}
+				this.find("div." + settings.progClass[2] + " > div").css({width: finish * 100 / total + "%"});
+				if (true == methods.isFinish.call(this)){
+					var progBtn = this.find("input." + settings.progClass[3]);
+					progBtn.eq(0).attr("disabled", false);
+					progBtn.slice(1).attr("disabled", true);
+				}
+				return this;
+			},
+			setRate: function(rate){
+				if (isNaN(rate) || rate > 100 || rate < 0 || true == methods.isFinish.call(this)){
+					return false;
+				}
+				this.find("span." + settings.progClass[1]).eq(1).html(rate);
+				this.find("div." + settings.progClass[2] + " > div").css({width: rate + "%"});
+				if ("100" == rate){
+					var progBtn = this.find("input." + settings.progClass[3]);
+					progBtn.eq(0).attr("disabled", false);
+					progBtn.slice(1).attr("disabled", true);
+				}
+				return this;
+			},
+			isFinish: function(){
+				if (this.is(":hidden")){
+					return true;
+				}
+				var progInfo = this.find("span." + settings.progClass[1]);
+				if ((progInfo.length > 2 && progInfo.eq(1).html() != progInfo.eq(2).html()) || 
+				    (progInfo.length <= 2 && "100" != progInfo.eq(1).html())){
+					return false;
+				}
+				return true;
+			}
+		};
+
+		$.fn.progressRate = function() {
+			var method = arguments[0];
+			if (methods[method]) {
+				return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+			} else if (typeof method === 'object' || !method) {
+				return methods.init.apply(this, arguments);
+			} else {
+				$.error('Method ' + method + ' does not exist on jQuery.tooltip');
+			}
+		};
 		return plugin;
 	};
 	return plugin;
