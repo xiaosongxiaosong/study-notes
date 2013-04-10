@@ -1,6 +1,6 @@
 <?php 
 class IPC{
-    /* 閫氱敤鍙傛暟 */
+    /* 通用参数 */
     public $id = '3f58019f-9738-5c80-c7ca-f41f4fd';
     public $name = 'ipc';
     public $master = '192.168.1.238';
@@ -9,7 +9,7 @@ class IPC{
     public $num = 1000;
     public $url = null;
 
-    /* 娣诲姞IPC */
+    /* 添加IPC */
     public $groupId = '0';
     public $ip = '192.168.1.145';
     public $controlPoint ='rtsp://192.168.1.238:8555/video';
@@ -18,7 +18,7 @@ class IPC{
     public $vendor = 'unknown';
     public $addParam = null;
 
-    /* 淇敼閫氶亾淇℃伅鍙傛暟 */
+    /* 修改通道信息参数 */
     public $protocol = 'RTPoverUDP';
     public $relayEnable = 'Disable';
     public $storageEnable = 'Disable';
@@ -28,7 +28,7 @@ class IPC{
     public $modParam = null;
 
 
-    /* 鍒犻櫎IPC */
+    /* 删除IPC */
     public $delParam = null;
 
     public $help = false;
@@ -83,7 +83,7 @@ class IPC{
         $this->delParam = 'curl -v -X DELETE ';
     }
 
-    /* 娣诲姞IPC */
+    /* 添加IPC */
     public function addIpc(){
         for($i = $this->index; $i < $this->num + $this->index; $i++){
             if($i < 10){
@@ -124,7 +124,7 @@ class IPC{
         }
     }
 
-    /* 淇敼IPC */
+    /* 修改IPC */
     public function  modIpc(){
         for($i = $this->index; $i < $this->num + $this->index; $i++){
             if($i < 10){
@@ -158,7 +158,7 @@ class IPC{
         }
     }
 
-    /* 鍒犻櫎IPC */
+    /* 删除IPC */
     public function delIpc(){
         for($i = $this->index; $i < $this->num + $this->index; $i++){
             if($i < 10){
