@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trinet jQuery plugin demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Le styles -->
+<link rel="stylesheet" href="../jquery.trinet.plugin.css">
+<style>
+tr.gridTr{
+	display: block;
+}
+</style>
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- Le fav and touch icons -->
+
+</head>
+
+<body>
+
+	<!-- Navbar
+	================================================== -->
+	<a href="../index.html">返回</a>
+
+	<table class="gridTable">
+		<tr class="gridTr">
+			<td class="gridCheckbox"><input type="checkbox" /></td>
+			<td class="linkOnText">啊使得</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+		</tr>
+		<tr class="gridTr">
+			<td class="gridCheckbox"><input type="checkbox" /></td>
+			<td class="linkOnText">啊使得</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+		</tr>
+		<tr class="gridTr">
+			<td class="gridCheckbox"><input type="checkbox" /></td>
+			<td class="linkOnText">啊使得</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+			<td>sadfas</td>
+		</tr>
+	</table>
+	<table id="paging_bar">
+        <tr>
+            <td>
+                <input type="button" class="pagingBtn" title="刷新" disabled="disabled" style="background-image: url(../images/refresh.png);" />
+            </td>
+            <td>
+                <input type="button" class="pagingBtn" title="首页" disabled="disabled" style="background-image: url(../images/resultset_first.png);" />
+            </td>
+            <td>
+                <input type="button" class="pagingBtn" title="上一页" disabled="disabled" style="background-image: url(../images/resultset_previous.png);" />
+            </td>
+            <td>
+                <input type="button" class="pagingBtn" title="下一页" disabled="disabled" style="background-image: url(../images/resultset_next.png);" />
+            </td>
+            <td>
+                <input type="button" class="pagingBtn" title="末页" disabled="disabled" style="background-image: url(../images/resultset_last.png);" />
+            </td>
+            <td class="STYLE8">
+                &nbsp;&nbsp;跳到
+                <input type="text" class="size4 pagingIpt" />
+                页&nbsp;&nbsp;
+            </td>
+            <td class="STYLE8">
+                第&nbsp;
+                <span class="pagingInfo">1</span> /
+                <span class="pagingInfo">1</span>
+                &nbsp;页&nbsp;
+            </td>
+            <td class="STYLE8">
+                &nbsp;共<span class="pagingInfo">0</span>条&nbsp;
+            </td>
+            <td class="STYLE8">
+                每页显示:
+                <span class="pagingNum" style="cursor: pointer;">25</span>,
+                <span class="pagingNum" style="cursor: pointer;">50</span>,
+                <span class="pagingNum" style="cursor: pointer;">100</span>
+            </td>
+        </tr>
+    </table>
+    <div class="middlebottom" style="width=100%;">
+    </div>
+
+
+	<!-- Footer
+	================================================== -->
+	
+
+
+
+	<!-- Le javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery.trinet.plugin.js"></script>
+<script>
+$(function() {
+	refresh();
+    plugin.pagingBar();
+    $.pagingBar('init');
+});
+function refreshGridData(){
+	var pagingInfo = $.pagingBar('get');
+	$.pagingBar('set', pagingInfo.curr*pagingInfo.paginal, 398);
+	$.pagingBar('show');
+};
+function refresh(){
+	plugin.pagingBar();
+	$.pagingBar('init', {
+		num: {
+			max: 100,
+			paginal: 25,
+			curr: 0,
+			total: 1,
+			num: 0
+		}
+	});
+	refreshGridData();
+	
+}
+var utils = {};
+utils.layout = function (){
+	$("table.gridTable").css({margin: "10px"});
+};
+</script>
+</html>

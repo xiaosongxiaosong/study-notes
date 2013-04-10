@@ -63,13 +63,13 @@ $(function() {
 		$("#progress_rate").progressRate("show", "累加");
 	});
 	$("#success").click(function(){
-		var res = $("#progress_rate").progressRate("add", true);
+		var res = $("#progress_rate").progressRate("complete", true);
 		if (false == res){
 			alert(res);
 		}
 	});
 	$("#faild").click(function(){
-		var res = $("#progress_rate").progressRate("add", false);
+		var res = $("#progress_rate").progressRate("complete", false);
 		if (false == res){
 			alert(res);
 		}

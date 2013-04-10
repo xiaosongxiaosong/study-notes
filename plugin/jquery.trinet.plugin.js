@@ -61,8 +61,8 @@
 				return this;
 			},
 			refresh: function() {
-				if (null !== handles.change && null !== handles.change[handles.index]) {
-					handles.change[handles.index].call(this);
+				if (null !== handles.refresh && null !== handles.refresh[handles.index]) {
+					handles.refresh[handles.index].call(this);
 				}
 				return this;
 			},
@@ -285,7 +285,7 @@
 					$.ajax({
 						url: "/ajaxCall.php",
 						type: "post",
-						data: "paginalNum=" + paginalNum
+						data: {work: "setPaginalNum", paginalNum: paginalNum}
 					});
 				});
 				methods.load();
@@ -544,7 +544,7 @@
 				progBtn.slice(1).attr("disabled", false);
 				this.hide();
 			},
-			add: function(){
+			complete: function(){
 				if (true == methods.isFinish.call(this)){
 					return false;
 				}
