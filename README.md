@@ -1,3 +1,4 @@
-# My Awesome Book
+# angular1.x es6 webpack2 component
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+从零开始 `angular1.x es6 webpack2 component`
+
