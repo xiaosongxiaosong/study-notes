@@ -1,6 +1,5 @@
 # Summary
 
-* [Introduction](README.md)
-* [资源](chapter1.md)
-* [设计模式](ji-chu-zhi-shi.md)
+* [设计模式](设计模式/README.md)
+    * [简单工厂模式](设计模式/简单工厂模式.md)
 
