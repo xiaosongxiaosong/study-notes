@@ -13,8 +13,6 @@
 
 这篇文档梳理了基于 dva-cli 使用 dva 的最小知识集，让你可以用最少的时间掌握创建类似 dva-hackernews 的全部知识，并且不需要掌握额外的冗余知识。
 
-
-
 ## JavaScript 语言
 
 ### 变量声明
@@ -126,7 +124,7 @@ const add = (state, { payload }) => {
 
 > 这个地方的 return 是否可以省略？？？
 
-析构是还可以陪 alias ，让代码更具有语义。
+析构是还可以配 alias ，让代码更具有语义。
 
 ```js
 const add = (state, { payload: todo }) => {
