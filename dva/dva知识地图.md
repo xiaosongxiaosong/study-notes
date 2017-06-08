@@ -158,5 +158,111 @@ app.model({
 });
 ```
 
+#### Spread Operator
+
+Spread Operator 即3个点 ... ，有几种不同的使用方法。
+
+可用于组装数组。
+
+```js
+const todos = ['Learn dva'];
+[...todos, 'Learn antd']; // ['Learn dva', 'Learn antd']
+```
+
+也可用于获取数组的部分项。
+
+```js
+const arr = ['a', 'b', 'c'];
+const [first, ...rest] = arr;
+rest; // ['b', 'c']
+
+// with ignore
+const [first, , ...rest] = arr;
+rest; // ['c']
+```
+
+还可收集函数参数为数组。
+
+```js
+function directions(first, ...rest){
+  console.log(rest);
+}
+directions('a', 'b', 'c'); // 'b', 'c'
+```
+
+代替apply。
+
+```js
+function foo(x, y, z){}
+const args = [1, 2, 3];
+
+// 下面两句效果相同
+foo.apply(null, args);
+foo(...args);
+```
+
+对于 Object 而言，用于组合成新的 Object。
+
+```js
+const foo = {
+  a: 1,
+  b: 2,
+};
+const bar = {
+  b: 3,
+  c: 2;
+};
+const d = 4;
+
+const ret = { ...foo, ...bar, d }; // { a: 1, b: 3, c: 2, d: 4}
+```
+
+此外，在 JSX 中 Spread Operator 还可用于扩展 props。
+
+#### Promises（Promise？？？）
+
+Promise 用于更优雅地处理异步请求。比如发起异步请求：
+
+```js
+fetch('/api/todos')
+  .then(res => res.json())
+  .then(data => ({ data }))
+  .catch(err => ({ err }));
+```
+
+定义Promise
+
+```js
+const delay = (timeout) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+};
+
+delay(1000).then(_ => {
+  console.log('executed');
+});
+```
+
+> \_ =&gt; {} ???
+
+#### Generators
+
+dva 的 effects 是通过 generator 组织的。 Generator 返回的是迭代器，通过 yield 关键字实现暂停功能。
+
+这是一个典型的 dva effect ，通过 yield 把异步逻辑通过同步的方式组织起来。
+
+```js
+app.model({
+  namespace: 'todos',
+  effects: {
+    *addRemote({ payload: todo }, { put, call }){
+      yield call(addTodo, todo);
+      yield put({ type: 'add', payload: todo });
+    },
+  },
+});
+```
+
 
 
