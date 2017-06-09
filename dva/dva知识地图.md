@@ -219,7 +219,7 @@ const ret = { ...foo, ...bar, d }; // { a: 1, b: 3, c: 2, d: 4}
 
 此外，在 JSX 中 Spread Operator 还可用于扩展 props。
 
-#### Promises（Promise？？？）
+### Promises（Promise？？？）
 
 Promise 用于更优雅地处理异步请求。比如发起异步请求：
 
@@ -246,7 +246,7 @@ delay(1000).then(_ => {
 
 > \_ =&gt; {} ???
 
-#### Generators
+### Generators
 
 dva 的 effects 是通过 generator 组织的。 Generator 返回的是迭代器，通过 yield 关键字实现暂停功能。
 
@@ -264,5 +264,141 @@ app.model({
 });
 ```
 
+## React Component
 
+### Stateless Functional Components
+
+React Component 有 3 种定义方式，分别是 React.createClass, class 和 Stateless Functional Component。推荐尽量使用最后一种，保持简洁和无状态。这是函数，不是   Object，没有 this 作用域，而是 pure function（纯函数）。
+
+比如定义 App Component：
+
+```js
+function App(props){
+ function handleClick(){
+   props.dispatch({ type: 'app/create' });
+ };
+ return <div onClick="handleClick">${props.name}</div>
+};
+```
+
+等同于：
+
+```js
+class App extends React.Component {
+  handleClick(){
+    this.props.dispatch({ type: 'app/create' });
+  }
+  render(){
+    return <div oClick={this.handleClick.bind(this)}>${this.props.name}</div>
+  }
+}
+```
+
+### JSX
+
+#### Component 嵌套
+
+类似 HTML， JSX 里可以给组件添加子组件。
+
+```js
+<App>
+  <Header />
+  <MainContent />
+  <Footer />
+</App>
+```
+
+#### className
+
+class 是保留字，所以添加样式时，需用 className 代替 class。
+
+```
+<h1 className="fancy">Hello dva</h1>
+```
+
+#### JavaScript 表达式
+
+JavaScript 表达式需要用 {} 括起来，会执行并返回结果。
+
+比如：
+
+```
+<h1>{ this.props.title }</h1>
+```
+
+#### Mapping Array to JSX
+
+可以把数组映射为 JSX 元素列表。
+
+```
+<ul>
+  { this.props.todos.map((todo, i) => <li key={i}>{ todo }</li>) }
+</ul>
+```
+
+#### 注释
+
+尽量不要用 // 做单行注释
+
+#### Spread Attributes
+
+这是 JSX 从 ECMAScript6 借鉴过来的很有用的特性，用于扩展组件 props。
+
+比如：
+
+```js
+const attrs ={
+  href: 'http://example.org',
+  target: '_blank',
+};
+<a {...attrs}>Hello</a>
+```
+
+等同于
+
+```js
+const attrs ={
+  href: 'http://example.org',
+  target: '_blank',
+};
+<a href={attrs.href} target={attrs.target}>Hello</a>
+```
+
+### Props
+
+数据处理在 React 中是非常重要的概念之一，分别可以通过 props， state 和 context 来处理数据。而在 dva 应用里，你只需要关心 props。
+
+#### propTypes
+
+JavaScript 是弱类型语言，所以请尽量声明 propTypes 对 Props 进行校验，以减少不必要的问题。
+
+```js
+function App(props){
+  return <div>{props.name}</div>
+};
+App.propTypes = {
+  name: React.PropTypes.string.isRequired,
+};
+```
+
+内置的 prop type 有：
+
+* PropTypes.array
+* PropTypes.bool
+* PropTypes.func
+* PropTypes.number
+* PropTypes.object
+* PropType.string
+
+#### 往下传数据
+
+![](https://camo.githubusercontent.com/ed04df6d56d8555cf99a754296b60f569b371663/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f4e417a654d79556f504d71786652762e706e67)
+
+#### 往上传数据
+
+![](https://camo.githubusercontent.com/a8ffad4e9534c1d1c651f10baa55c37250118b8d/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f66694b4b67444775454a66537678762e706e67)
+
+### CSS Modules
+
+一张图理解 CSS Modules 的工作原理：![](https://camo.githubusercontent.com/d1341a45402a32a6112f7a99cd99341eab2abbad/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f535742775754625a4b7178774550712e706e67)
 
