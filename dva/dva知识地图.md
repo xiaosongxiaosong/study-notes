@@ -402,3 +402,249 @@ App.propTypes = {
 
 一张图理解 CSS Modules 的工作原理：![](https://camo.githubusercontent.com/d1341a45402a32a6112f7a99cd99341eab2abbad/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f535742775754625a4b7178774550712e706e67)
 
+button class 在构建之后会被重命名为 ProductList_button_1FU0u 。 button 是 local name ，而 ProductList_button_1FU0u 是 global name 。你可以用简短的描述性名字，而不需要关心命名冲突问题。
+
+然后你要做的全部事情就是在 css/less 文件里写 .button {...} ，并在组件里通过 styles.button 来引用他。
+
+#### 定义全局 CSS
+
+CSS Modules 默认是局部作用域，想要声明一个全局规则，可用 :global 语法。
+
+比如：
+
+```css
+.title{
+  color: red;
+}
+:global(.title){
+  color: green;
+}
+```
+
+然后在引用的时候：
+
+```jsx
+<App className={sytle.title} /> // red
+<App class="title" />           // green
+```
+
+#### classnames Package
+
+在一些复杂的场景中，一个元素可能对应多个 className， 而每个 className 又基于一些条件来决定是否出现。这时， classnames 这个库就非常有用。
+
+```jsx
+import classnames from 'classnames';
+
+const App = (props) => {
+  const cls = classnames({
+    btn: true,
+    btnLarge: props.type === 'submit',
+    btnSmall: props.type === 'edit',
+  });
+  return <div className={ cls } />
+}
+```
+
+这样，传入不同的 type 给 App 组件，就会返回不同的 className 组合：
+
+```jsx
+<App type="submit" /> // btn btnLarge
+<App type="edit" />   // btn btnSmall
+```
+
+## Reducer
+
+reducer 是一个纯函数，接受 state 和 action ， 返回老的或新的 state。即： (state, action) => state
+
+### 增删改
+
+以 todos 为例：
+
+```jsx
+app.model({
+  namespace: 'todos',
+  state: [],
+  reducers: {
+    add(state, { payload: todo }) {
+      return state.concat(todo);
+    },
+    remove(state, { payload: id }) { 
+      return state.filter(todo => todo.id !== id);
+    },
+    update(state, { payload: updatedTod }) {
+      return state.map(todo => {
+        if (todo.id === updatedTodo.id){
+          return { ...todo, ...updatedTodo };
+        } else {
+          return todo;
+        }
+      });
+    },
+  },
+});
+```
+
+### 嵌套数据的增删改
+
+建议最多一层嵌套，以保持 state 的扁平化，深层嵌套会让 reducer 很难写和难以维护。
+
+```jsx
+app.model({
+  namespace: 'app',
+  state: {
+    todos: [],
+    loading: false,
+  },
+  reducers: {
+    add(state, { payload: todo }) {
+      const todos = state.todos.concat(todo);
+      return { ...state, todos };
+    },
+  },
+});
+```
+
+## Effect
+
+### put
+
+用户触发 action
+
+```jsx
+yield put({ type: 'todos/add', payload: 'Learn Dva' });
+```
+
+### call
+
+用于调用异步逻辑，支持 Promise。
+
+```jsx
+const result = yield call(fetch, '/todos');
+```
+
+### select
+
+用于从 state 里获取数据。
+
+```jsx
+const todos yield select(state => state.todos);
+```
+
+## 错误处理
+
+### 全局错误处理
+
+dva 里， effects 和 subscriptions 的抛错全部会走 onError hook。所以可以在 onError 里统一处理错误。
+
+```jsx
+const app = dva({
+  onError(e, dispatch){
+    console.log(e.message);
+  },
+});
+```
+
+然后 effects 里的抛错和 reject 的 promise 就都会被捕获了。
+
+### 本地错误处理
+
+如果需要对某些 effects 的错误进行特殊处理，需要在effect 内部加上 trt catch。
+
+```jsx
+app.model({
+  effects: {
+    *addRemote() {
+      try{
+        // your code here
+      } catch(e){
+        console.log(e.message);
+      }
+    },
+  },
+});
+```
+
+## 异步请求
+
+异步请求基于 whatwg-fetch，API 详见： [https://github.com/github/fetch](https://github.com/github/fetch)
+
+### GET 和 POSt
+
+```jsx
+import request from '../utils/request';
+
+// GET
+request('/api/todos');
+
+// POST
+request('/api/todos', {
+  method: 'POST',
+  body: JSON.stringify({ a: 1}),
+});
+```
+
+### 统一错误处理
+
+加入约定后台返回以下格式时，做统一的错误处理。
+
+```js
+{
+  status: 'error',
+  message: '',
+}
+```
+
+编辑 utils/request.js ，加入以下中间件：
+
+```js
+function parseErrorMessage({ data }) {
+  const { status, message } = data;
+  if (status === 'error') {
+    throw new Error(message);
+  }
+  return { data };
+}
+```
+
+然后，这类错误就会走到 onError hook 里。
+
+## Subscription
+
+subscriptions 是订阅，用于订阅一个数据源，然后根据需要 dispatch 相应的 action。数据源可以是当前的时间、服务器的 websocket 连接、keyboard 输入、 geolocation 变化、 history 路由变化等等。格式为 ({ dispatch, history }) => unsubscribe 。
+
+### 异步数据初始化
+
+比如：当用户进入 /users 页面时。触发 action users/fetch 加载用户数据。
+
+```jsx
+app.model({
+  subscriptions: {
+    setup({ dispatch, history }){
+      history.listen(( pathname ) => {
+        if (pathname === '/users'){
+          dispatch({
+            type: 'users/fetch',
+          });
+        }
+      });
+    },
+  },
+});
+```
+
+#### path-to-regexp Pachage
+
+如果 url 规格比较复杂，比如 /users/:userId/search ，那么匹配和 userId 的获取都会比较麻烦。这是（时？？？）推荐用 path-to-regexp 简化这部分逻辑。
+
+```jsx
+import pathToRegexp from 'path-to-regexp';
+
+// in subscription
+const match = pathToRegexp('/users/userId/search').exec(pathname);
+if (match){
+  const userId = match[1];
+  // dispatch action with userId
+}
+```
+
+## Router
