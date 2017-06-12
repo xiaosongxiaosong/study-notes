@@ -468,7 +468,7 @@ app.model({
     add(state, { payload: todo }) {
       return state.concat(todo);
     },
-    remove(state, { payload: id }) { 
+    remove(state, { payload: id }) {
       return state.filter(todo => todo.id !== id);
     },
     update(state, { payload: updatedTod }) {
@@ -648,3 +648,131 @@ if (match){
 ```
 
 ## Router
+
+### Config with JSX Element (router.js)
+
+```jsx
+<Route path="/" component={App}>
+  <Route path="accounts" component={Accounts} />
+  <Route path="statements" component={Statements}>
+</Route>
+```
+
+### Route Components
+
+Route Components 是指 ./src/routers/ 目录下的文件，他们是 ./src/router.js 里匹配的 Component。
+
+#### 通过 connect 绑定数据
+
+比如：
+
+```jsx
+import { connect } from 'dva';
+
+function mapStateToProps(state, ownProps){
+  return {
+    users: state.users,
+  };
+}
+export default connect(mapStateToProps)(App);
+```
+
+然后 App 里就有了 dispatch 和 users 两个属性。
+
+> dispatch 从哪里来的？？？
+
+#### Injected Props（e.g. location）（内置属性）
+
+Route Component 会有额外的 props 用以获取路由信息。
+
+* location
+
+* params
+
+* children
+
+更多详见： [react-router](https://github.com/ReactTraining/react-router)
+
+### 基于 action 进行页面跳转
+
+```jsx
+import { routerRedux } from 'dva/router'
+
+// Inside Effects
+yield put(routerRedux.push('/logout'));
+
+// Outside Effects
+dispatch(routerRedux.push('/logout'));
+
+// With query
+routerRedux.push({
+  pathname: 'logout',
+  query: {
+    page: 2,
+  },
+});
+```
+
+除了 push(location) 外还有更多方法，详见 [react-router-redux](https://github.com/reactjs/react-router-redux#pushlocation-replacelocation-gonumber-goback-goforward)
+
+## dva 配置
+
+### Redux Middleware
+
+比如要添加 redux-logger 中间件：
+
+```jsx
+import createLogger from 'redux-logger';
+
+const app = dva({
+  onAction: createLogger(),
+});
+```
+
+注：onAction 支持数组，可同时传入多个中间件。
+
+### history
+
+#### 切换 history 为 browserHistory
+
+```jsx
+import { browserHistory } from 'dva/router';
+
+const app = dva({
+  history: browserHistory,
+});
+```
+
+#### 去除 hashHistory 下的 _k 查询参数
+
+```jsx
+import { useRouterHistory } from 'dva/router';
+import { createHashHistory } from 'hisroty';
+
+const app = dva({
+  history: useRouterHistory(createHashHistory)({ queryKey: false }),
+});
+```
+
+## 工具
+
+### 通过 dva-cli 创建项目
+
+先安装 dva-cli 。
+
+```shell
+$ npm install dva-cli -g
+```
+
+然后创建项目。
+
+```sh
+$ dva new myapp
+```
+
+最后，进入目录并启动。
+
+```
+cd myapp
+npm start
+```
