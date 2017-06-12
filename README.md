@@ -15,4 +15,6 @@
 > 基于 redux、 redux-saga 和 react-router@2.x 的轻量级前段框架。（灵感来自于 elm 和 choo）
 
 
+## [dva 教程](https://github.com/dvajs/dva-docs/tree/master/v1/zh-cn/tutorial)
 
+## [JS 函数式编程指南](https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/)
