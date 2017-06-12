@@ -7,6 +7,7 @@
   * [抽象工厂模式](/设计模式/抽象工厂模式.md)
 * [dvajs](/dva/README.md)
   * [dva 知识地图](/dva/dva知识地图.md)
+  * [dva 的 8 个概念](/dva/dva的8个概念.md)
 
 
 
