@@ -402,7 +402,7 @@ App.propTypes = {
 
 一张图理解 CSS Modules 的工作原理：![](https://camo.githubusercontent.com/d1341a45402a32a6112f7a99cd99341eab2abbad/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f535742775754625a4b7178774550712e706e67)
 
-button class 在构建之后会被重命名为 ProductList_button_1FU0u 。 button 是 local name ，而 ProductList_button_1FU0u 是 global name 。你可以用简短的描述性名字，而不需要关心命名冲突问题。
+button class 在构建之后会被重命名为 ProductList\_button\_1FU0u 。 button 是 local name ，而 ProductList\_button\_1FU0u 是 global name 。你可以用简短的描述性名字，而不需要关心命名冲突问题。
 
 然后你要做的全部事情就是在 css/less 文件里写 .button {...} ，并在组件里通过 styles.button 来引用他。
 
@@ -454,7 +454,7 @@ const App = (props) => {
 
 ## Reducer
 
-reducer 是一个纯函数，接受 state 和 action ， 返回老的或新的 state。即： (state, action) => state
+reducer 是一个纯函数，接受 state 和 action ， 返回老的或新的 state。即： \(state, action\) =&gt; state
 
 ### 增删改
 
@@ -610,7 +610,7 @@ function parseErrorMessage({ data }) {
 
 ## Subscription
 
-subscriptions 是订阅，用于订阅一个数据源，然后根据需要 dispatch 相应的 action。数据源可以是当前的时间、服务器的 websocket 连接、keyboard 输入、 geolocation 变化、 history 路由变化等等。格式为 ({ dispatch, history }) => unsubscribe 。
+subscriptions 是订阅，用于订阅一个数据源，然后根据需要 dispatch 相应的 action。数据源可以是当前的时间、服务器的 websocket 连接、keyboard 输入、 geolocation 变化、 history 路由变化等等。格式为 \({ dispatch, history }\) =&gt; unsubscribe 。
 
 ### 异步数据初始化
 
@@ -649,7 +649,7 @@ if (match){
 
 ## Router
 
-### Config with JSX Element (router.js)
+### Config with JSX Element \(router.js\)
 
 ```jsx
 <Route path="/" component={App}>
@@ -713,7 +713,7 @@ routerRedux.push({
 });
 ```
 
-除了 push(location) 外还有更多方法，详见 [react-router-redux](https://github.com/reactjs/react-router-redux#pushlocation-replacelocation-gonumber-goback-goforward)
+除了 push\(location\) 外还有更多方法，详见 [react-router-redux](https://github.com/reactjs/react-router-redux#pushlocation-replacelocation-gonumber-goback-goforward)
 
 ## dva 配置
 
@@ -743,7 +743,7 @@ const app = dva({
 });
 ```
 
-#### 去除 hashHistory 下的 _k 查询参数
+#### 去除 hashHistory 下的 \_k 查询参数
 
 ```jsx
 import { useRouterHistory } from 'dva/router';
@@ -776,3 +776,6 @@ $ dva new myapp
 cd myapp
 npm start
 ```
+
+
+
