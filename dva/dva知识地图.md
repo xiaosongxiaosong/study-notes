@@ -118,7 +118,7 @@ console.log(foo); // 1
 
 ```js
 const add = (state, { payload }) => {
-  return state.concat(payload); // 这个地方的 return 是否可以省略???
+  return state.concat(payload); // 这个地方的 return 是否可以省略？？？
 };
 ```
 
@@ -244,7 +244,7 @@ delay(1000).then(_ => {
 });
 ```
 
-> \_ =&gt; {} ???
+> \_ =&gt; {} ？？？
 
 ### Generators
 
@@ -691,7 +691,7 @@ Route Component 会有额外的 props 用以获取路由信息。
 
 * children
 
-更多详见： [react-router](https://github.com/ReactTraining/react-router)
+更多详见： [react-router](https://github.com/ReactTraining/react-router/blob/v2.8.1/docs/guides/RouteConfiguration.md)
 
 ### 基于 action 进行页面跳转
 
