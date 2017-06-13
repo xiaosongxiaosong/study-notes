@@ -8,6 +8,7 @@
 * [dvajs](/dva/README.md)
   * [dva 知识地图](/dva/dva知识地图.md)
   * [dva 的 8 个概念](/dva/dva的8个概念.md)
+  * [API](/dva/API.md)
 * [dva 教程](/dva 教程/README.md)
 
 
