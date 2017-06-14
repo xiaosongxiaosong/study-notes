@@ -3,8 +3,30 @@
 [原文地址](https://github.com/dvajs/dva/blob/master/docs/API_zh-CN.md)
 
 ## 目录
-<!-- START doctoc -->
-<!-- END doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [输出文件](#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6)
+  - [dva](#dva)
+  - [dva/mobile](#dvamobile)
+  - [dva/router](#dvarouter)
+  - [dva/fetch](#dvafetch)
+  - [dva/saga](#dvasaga)
+- [dva API](#dva-api)
+  - [`app = dva(opts)`](#app--dvaopts)
+  - [`app.use(hooks)`](#appusehooks)
+  - [hooks 包含：](#hooks-%E5%8C%85%E5%90%AB)
+    - [`onError(fn, dispatch)`](#onerrorfn-dispatch)
+    - [`onAction(fn | fn[])`](#onactionfn--fn)
+    - [`onStateChange(fn)`](#onstatechangefn)
+    - [`onReducer(fn)`](#onreducerfn)
+    - [`onEffect(fn)`](#oneffectfn)
+    - [`onHmr(fn)`](#onhmrfn)
+    - [`extraReducers`](#extrareducers)
+    - [`extraEnhancers`](#extraenhancers)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 输出文件
 
