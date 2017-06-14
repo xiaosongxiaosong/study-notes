@@ -15,6 +15,73 @@
 
 这篇文档梳理了基于 dva-cli 使用 dva 的最小知识集，让你可以用最少的时间掌握创建类似 dva-hackernews 的全部知识，并且不需要掌握额外的冗余知识。
 
+## 目录
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [JavaScript 语言](#javascript-%E8%AF%AD%E8%A8%80)
+  - [变量声明](#%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E)
+    - [const 和 let](#const-%E5%92%8C-let)
+    - [模板字符串](#%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2)
+    - [默认参数](#%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0)
+  - [箭头函数](#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0)
+  - [模块的 Import 和 Export](#%E6%A8%A1%E5%9D%97%E7%9A%84-import-%E5%92%8C-export)
+  - [ES6 对象和数组](#es6-%E5%AF%B9%E8%B1%A1%E5%92%8C%E6%95%B0%E7%BB%84)
+    - [析构赋值](#%E6%9E%90%E6%9E%84%E8%B5%8B%E5%80%BC)
+    - [对象字面量改进](#%E5%AF%B9%E8%B1%A1%E5%AD%97%E9%9D%A2%E9%87%8F%E6%94%B9%E8%BF%9B)
+    - [Spread Operator](#spread-operator)
+  - [Promises（Promise？？？）](#promisespromise)
+  - [Generators](#generators)
+- [React Component](#react-component)
+  - [Stateless Functional Components](#stateless-functional-components)
+  - [JSX](#jsx)
+    - [Component 嵌套](#component-%E5%B5%8C%E5%A5%97)
+    - [className](#classname)
+    - [JavaScript 表达式](#javascript-%E8%A1%A8%E8%BE%BE%E5%BC%8F)
+    - [Mapping Array to JSX](#mapping-array-to-jsx)
+    - [注释](#%E6%B3%A8%E9%87%8A)
+    - [Spread Attributes](#spread-attributes)
+  - [Props](#props)
+    - [propTypes](#proptypes)
+    - [往下传数据](#%E5%BE%80%E4%B8%8B%E4%BC%A0%E6%95%B0%E6%8D%AE)
+    - [往上传数据](#%E5%BE%80%E4%B8%8A%E4%BC%A0%E6%95%B0%E6%8D%AE)
+  - [CSS Modules](#css-modules)
+    - [定义全局 CSS](#%E5%AE%9A%E4%B9%89%E5%85%A8%E5%B1%80-css)
+    - [classnames Package](#classnames-package)
+- [Reducer](#reducer)
+  - [增删改](#%E5%A2%9E%E5%88%A0%E6%94%B9)
+  - [嵌套数据的增删改](#%E5%B5%8C%E5%A5%97%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A2%9E%E5%88%A0%E6%94%B9)
+- [Effect](#effect)
+  - [put](#put)
+  - [call](#call)
+  - [select](#select)
+- [错误处理](#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)
+  - [全局错误处理](#%E5%85%A8%E5%B1%80%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)
+  - [本地错误处理](#%E6%9C%AC%E5%9C%B0%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)
+- [异步请求](#%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82)
+  - [GET 和 POSt](#get-%E5%92%8C-post)
+  - [统一错误处理](#%E7%BB%9F%E4%B8%80%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)
+- [Subscription](#subscription)
+  - [异步数据初始化](#%E5%BC%82%E6%AD%A5%E6%95%B0%E6%8D%AE%E5%88%9D%E5%A7%8B%E5%8C%96)
+    - [path-to-regexp Pachage](#path-to-regexp-pachage)
+- [Router](#router)
+  - [Config with JSX Element \(router.js\)](#config-with-jsx-element-%5Crouterjs%5C)
+  - [Route Components](#route-components)
+    - [通过 connect 绑定数据](#%E9%80%9A%E8%BF%87-connect-%E7%BB%91%E5%AE%9A%E6%95%B0%E6%8D%AE)
+    - [Injected Props（e.g. location）（内置属性）](#injected-propseg-location%E5%86%85%E7%BD%AE%E5%B1%9E%E6%80%A7)
+  - [基于 action 进行页面跳转](#%E5%9F%BA%E4%BA%8E-action-%E8%BF%9B%E8%A1%8C%E9%A1%B5%E9%9D%A2%E8%B7%B3%E8%BD%AC)
+- [dva 配置](#dva-%E9%85%8D%E7%BD%AE)
+  - [Redux Middleware](#redux-middleware)
+  - [history](#history)
+    - [切换 history 为 browserHistory](#%E5%88%87%E6%8D%A2-history-%E4%B8%BA-browserhistory)
+    - [去除 hashHistory 下的 \_k 查询参数](#%E5%8E%BB%E9%99%A4-hashhistory-%E4%B8%8B%E7%9A%84-%5C_k-%E6%9F%A5%E8%AF%A2%E5%8F%82%E6%95%B0)
+- [工具](#%E5%B7%A5%E5%85%B7)
+  - [通过 dva-cli 创建项目](#%E9%80%9A%E8%BF%87-dva-cli-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## JavaScript 语言
 
 ### 变量声明
