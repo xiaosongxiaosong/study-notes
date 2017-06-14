@@ -6,6 +6,6 @@ gulp.task('default', function () {
 
   gulp.src(['./*.md', './!(node_modules)/*.md'])
     .pipe(toc())
-    // .pipe(marked())
+    .pipe(marked())
     .pipe(gulp.dest('./public/'));
 });

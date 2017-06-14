@@ -1,0 +1,144 @@
+<h1 id="api">API</h1>
+<p><a href="https://github.com/dvajs/dva/blob/master/docs/API_zh-CN.md">原文地址</a></p>
+<h2 id="-">目录</h2>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+<li><a href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6">输出文件</a><ul>
+<li><a href="#dva">dva</a></li>
+<li><a href="#dvamobile">dva/mobile</a></li>
+<li><a href="#dvarouter">dva/router</a></li>
+<li><a href="#dvafetch">dva/fetch</a></li>
+<li><a href="#dvasaga">dva/saga</a></li>
+</ul>
+</li>
+<li><a href="#dva-api">dva API</a><ul>
+<li><a href="#app--dvaopts"><code>app = dva(opts)</code></a></li>
+<li><a href="#appusehooks"><code>app.use(hooks)</code></a></li>
+<li><a href="#hooks-%E5%8C%85%E5%90%AB">hooks 包含：</a><ul>
+<li><a href="#onerrorfn-dispatch"><code>onError(fn, dispatch)</code></a></li>
+<li><a href="#onactionfn--fn"><code>onAction(fn | fn[])</code></a></li>
+<li><a href="#onstatechangefn"><code>onStateChange(fn)</code></a></li>
+<li><a href="#onreducerfn"><code>onReducer(fn)</code></a></li>
+<li><a href="#oneffectfn"><code>onEffect(fn)</code></a></li>
+<li><a href="#onhmrfn"><code>onHmr(fn)</code></a></li>
+<li><a href="#extrareducers"><code>extraReducers</code></a></li>
+<li><a href="#extraenhancers"><code>extraEnhancers</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="-">输出文件</h2>
+<h3 id="dva">dva</h3>
+<p>默认输出文件</p>
+<h3 id="dva-mobile">dva/mobile</h3>
+<p>dva/mobile 是无 router 版的 dva，可用于多页应用、react-native 等。叫 dva/mobile 有点欠考虑，可能在下个大版本中改名。</p>
+<h3 id="dva-router">dva/router</h3>
+<p>默认输出 react-router@2.x 接口，react-router-redux 的接口通过属性 routerRedux 输出。</p>
+<p>比如：</p>
+<pre><code class="lang-js">import { Router, Route, routerRedux } from &#39;dva/router&#39;;
+</code></pre>
+<h3 id="dva-fetch">dva/fetch</h3>
+<p>异步请求库，输出 isomorphic-fetch 的接口。不和 dva 强绑定，可以选择任意的请求库。</p>
+<h3 id="dva-saga">dva/saga</h3>
+<p>输出 redux-saga 的接口，主要用于用例的编写。（用例中需要用到 effects）</p>
+<h2 id="dva-api">dva API</h2>
+<h3 id="-app-dva-opts-"><code>app = dva(opts)</code></h3>
+<p>创建应用，返回 dva 实例。（注： dva 支持多实例）</p>
+<p>opts 包含：</p>
+<ul>
+<li>history ：指定给路由用的 history，默认是 hashHistory</li>
+<li>initialState ：指定初始数据，优先级高于 model 中的 state，默认是 {}</li>
+</ul>
+<p>如果要配置 history 未 browserHistory，可以这样：</p>
+<pre><code class="lang-js">import { browserHistory } from &#39;dva/router&#39;;
+
+const app = dva({
+  history: browserHistory,
+});
+</code></pre>
+<p>另外，出于易用性的考虑， opts 里也可以配所有的 hooks，下面包含全部的可配属性：</p>
+<pre><code class="lang-js">const app = dva({
+  history,
+  initialState,
+  onError,
+  onAction,
+  onStateChange,
+  onReducer,
+  onEffect,
+  onHmr,
+  extraReducers,
+  extraEnhancers,
+});
+</code></pre>
+<h3 id="-app-use-hooks-"><code>app.use(hooks)</code></h3>
+<p>配置 hooks 或者注册插件。（插件最终返回的是 hooks）</p>
+<p>比如注册 dva-loading 插件的例子：</p>
+<pre><code class="lang-js">import createLoading from &#39;dva-loading&#39;;
+
+app.use(createLoading(opts));
+</code></pre>
+<h3 id="hooks-">hooks 包含：</h3>
+<h4 id="-onerror-fn-dispatch-"><code>onError(fn, dispatch)</code></h4>
+<p>effect 执行错误或 subscription 通过 done 主动抛错时触发，可用于管理全局出错状态。</p>
+<p>注意：subscription 并没有加 try...catch ，所以有错误时需要通过第二个参数 done 主动抛错。例子：</p>
+<pre><code class="lang-js">app.model({
+  subscriptions: {
+    setup({ dispatch }, done){
+      done(e);
+    },
+  },
+});
+</code></pre>
+<p>如果我们用 antd，那么最简单的全局错误处理通常会这么做：</p>
+<pre><code class="lang-js">import { message } from &#39;antd&#39;;
+
+const app = dva({
+  onError(e) {
+    message.errar(e.message, /* duration */);
+  },
+});
+</code></pre>
+<h4 id="-onaction-fn-fn-"><code>onAction(fn | fn[])</code></h4>
+<p>在 action 被 dispatch 时触发，用于注册 redux 中间件，支持函数或函数数组格式。</p>
+<p>例如我们要通过 redux-logger 打印日志：</p>
+<pre><code class="lang-js">import createLogger from &#39;redux-logger&#39;;
+
+const app = dva({
+  onAction: createLogger(opts),
+});
+</code></pre>
+<h4 id="-onstatechange-fn-"><code>onStateChange(fn)</code></h4>
+<p>state 改变时触发，可用于同步 state 到 localStorage，服务器端等。</p>
+<h4 id="-onreducer-fn-"><code>onReducer(fn)</code></h4>
+<p>封装 reducer 执行。比如借助 redux-undo 实现 redo/undo：</p>
+<pre><code class="lang-js">import undoable from &#39;redux-undo&#39;;
+
+const app = dva({
+  onReducer: reducer =&gt; {
+    return (state, action) =&gt; {
+      const undoOpts = {};
+      const newState = undoable(reducer, undoOpts)(state, action);
+      // 由于 dva 同步了 routing 数据，所以需要把这部分还原
+      return { ...newState, routing: newState.present.routing };
+    },
+  },
+});
+</code></pre>
+<h4 id="-oneffect-fn-"><code>onEffect(fn)</code></h4>
+<p>封装 effect 执行。比如 dva-loading 基于此实现了自动处理 loading 状态。</p>
+<h4 id="-onhmr-fn-"><code>onHmr(fn)</code></h4>
+<p>热替换相关，目前用于 babel-plugin-dva-hmr 。</p>
+<h4 id="-extrareducers-"><code>extraReducers</code></h4>
+<p>指定额外的 reducer，比如 redux-form 需要指定额外的 from reducer：</p>
+<pre><code class="lang-js">import { reducer as formReducer } from &#39;redux-form&#39;;
+
+const app = dva({
+  extraReducers: {
+    form: formReducer,
+  },
+});
+</code></pre>
+<h4 id="-extraenhancers-"><code>extraEnhancers</code></h4>

@@ -1,0 +1,642 @@
+<h1 id="dva-">dva 知识地图</h1>
+<p><a href="https://github.com/dvajs/dva-knowledgemap">原文地址</a></p>
+<p>不知道大家学习 react 或 dva 时会不会有这样的疑惑：</p>
+<ul>
+<li>ES6 特性那么多，我需要全部学会吗？</li>
+<li>react component 有三种写法，我需要全部学会吗？</li>
+<li>reducer 的增删改应该怎么写？</li>
+<li>怎样做全局/局部的错误处理？</li>
+<li>怎么发异步请求？</li>
+<li>怎么处理复杂的异步业务逻辑？</li>
+<li>怎么配置路由</li>
+<li>……</li>
+</ul>
+<p>这篇文档梳理了基于 dva-cli 使用 dva 的最小知识集，让你可以用最少的时间掌握创建类似 dva-hackernews 的全部知识，并且不需要掌握额外的冗余知识。</p>
+<h2 id="-">目录</h2>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+<li><a href="#javascript-%E8%AF%AD%E8%A8%80">JavaScript 语言</a><ul>
+<li><a href="#%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E">变量声明</a><ul>
+<li><a href="#const-%E5%92%8C-let">const 和 let</a></li>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2">模板字符串</a></li>
+<li><a href="#%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0">默认参数</a></li>
+</ul>
+</li>
+<li><a href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0">箭头函数</a></li>
+<li><a href="#%E6%A8%A1%E5%9D%97%E7%9A%84-import-%E5%92%8C-export">模块的 Import 和 Export</a></li>
+<li><a href="#es6-%E5%AF%B9%E8%B1%A1%E5%92%8C%E6%95%B0%E7%BB%84">ES6 对象和数组</a><ul>
+<li><a href="#%E6%9E%90%E6%9E%84%E8%B5%8B%E5%80%BC">析构赋值</a></li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E5%AD%97%E9%9D%A2%E9%87%8F%E6%94%B9%E8%BF%9B">对象字面量改进</a></li>
+<li><a href="#spread-operator">Spread Operator</a></li>
+</ul>
+</li>
+<li><a href="#promisespromise">Promises（Promise？？？）</a></li>
+<li><a href="#generators">Generators</a></li>
+</ul>
+</li>
+<li><a href="#react-component">React Component</a><ul>
+<li><a href="#stateless-functional-components">Stateless Functional Components</a></li>
+<li><a href="#jsx">JSX</a><ul>
+<li><a href="#component-%E5%B5%8C%E5%A5%97">Component 嵌套</a></li>
+<li><a href="#classname">className</a></li>
+<li><a href="#javascript-%E8%A1%A8%E8%BE%BE%E5%BC%8F">JavaScript 表达式</a></li>
+<li><a href="#mapping-array-to-jsx">Mapping Array to JSX</a></li>
+<li><a href="#%E6%B3%A8%E9%87%8A">注释</a></li>
+<li><a href="#spread-attributes">Spread Attributes</a></li>
+</ul>
+</li>
+<li><a href="#props">Props</a><ul>
+<li><a href="#proptypes">propTypes</a></li>
+<li><a href="#%E5%BE%80%E4%B8%8B%E4%BC%A0%E6%95%B0%E6%8D%AE">往下传数据</a></li>
+<li><a href="#%E5%BE%80%E4%B8%8A%E4%BC%A0%E6%95%B0%E6%8D%AE">往上传数据</a></li>
+</ul>
+</li>
+<li><a href="#css-modules">CSS Modules</a><ul>
+<li><a href="#%E5%AE%9A%E4%B9%89%E5%85%A8%E5%B1%80-css">定义全局 CSS</a></li>
+<li><a href="#classnames-package">classnames Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#reducer">Reducer</a><ul>
+<li><a href="#%E5%A2%9E%E5%88%A0%E6%94%B9">增删改</a></li>
+<li><a href="#%E5%B5%8C%E5%A5%97%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A2%9E%E5%88%A0%E6%94%B9">嵌套数据的增删改</a></li>
+</ul>
+</li>
+<li><a href="#effect">Effect</a><ul>
+<li><a href="#put">put</a></li>
+<li><a href="#call">call</a></li>
+<li><a href="#select">select</a></li>
+</ul>
+</li>
+<li><a href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">错误处理</a><ul>
+<li><a href="#%E5%85%A8%E5%B1%80%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">全局错误处理</a></li>
+<li><a href="#%E6%9C%AC%E5%9C%B0%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">本地错误处理</a></li>
+</ul>
+</li>
+<li><a href="#%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82">异步请求</a><ul>
+<li><a href="#get-%E5%92%8C-post">GET 和 POSt</a></li>
+<li><a href="#%E7%BB%9F%E4%B8%80%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">统一错误处理</a></li>
+</ul>
+</li>
+<li><a href="#subscription">Subscription</a><ul>
+<li><a href="#%E5%BC%82%E6%AD%A5%E6%95%B0%E6%8D%AE%E5%88%9D%E5%A7%8B%E5%8C%96">异步数据初始化</a><ul>
+<li><a href="#path-to-regexp-pachage">path-to-regexp Pachage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#router">Router</a><ul>
+<li><a href="#config-with-jsx-element-%5Crouterjs%5C">Config with JSX Element (router.js)</a></li>
+<li><a href="#route-components">Route Components</a><ul>
+<li><a href="#%E9%80%9A%E8%BF%87-connect-%E7%BB%91%E5%AE%9A%E6%95%B0%E6%8D%AE">通过 connect 绑定数据</a></li>
+<li><a href="#injected-propseg-location%E5%86%85%E7%BD%AE%E5%B1%9E%E6%80%A7">Injected Props（e.g. location）（内置属性）</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9F%BA%E4%BA%8E-action-%E8%BF%9B%E8%A1%8C%E9%A1%B5%E9%9D%A2%E8%B7%B3%E8%BD%AC">基于 action 进行页面跳转</a></li>
+</ul>
+</li>
+<li><a href="#dva-%E9%85%8D%E7%BD%AE">dva 配置</a><ul>
+<li><a href="#redux-middleware">Redux Middleware</a></li>
+<li><a href="#history">history</a><ul>
+<li><a href="#%E5%88%87%E6%8D%A2-history-%E4%B8%BA-browserhistory">切换 history 为 browserHistory</a></li>
+<li><a href="#%E5%8E%BB%E9%99%A4-hashhistory-%E4%B8%8B%E7%9A%84-%5C_k-%E6%9F%A5%E8%AF%A2%E5%8F%82%E6%95%B0">去除 hashHistory 下的 _k 查询参数</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E5%B7%A5%E5%85%B7">工具</a><ul>
+<li><a href="#%E9%80%9A%E8%BF%87-dva-cli-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE">通过 dva-cli 创建项目</a></li>
+</ul>
+</li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="javascript-">JavaScript 语言</h2>
+<h3 id="-">变量声明</h3>
+<h4 id="const-let">const 和 let</h4>
+<p>不要用 var ，而是使用 const 和 let ，分别表示常量和变量。不同于 var 的函数作用域， const 和 let 都是块级作用域。</p>
+<pre><code class="lang-js">const DELAY = 1000;
+
+let count = 0;
+count += 1;
+</code></pre>
+<h4 id="-">模板字符串</h4>
+<p>模板字符串提供了另一种做字符串组合的方法。</p>
+<pre><code class="lang-js">const user = &#39;world&#39;;
+console.log(`hello ${user}`); // hello world
+
+//多行
+const content = `
+  Hello ${firstName},
+  Thanks for ordering ${qty} tickets to ${event}.
+`;
+</code></pre>
+<h4 id="-">默认参数</h4>
+<pre><code class="lang-js">function logActivity(activity = &#39;skiing&#39;){
+  console.log(activity);
+}
+
+logActivity(); // skiing
+</code></pre>
+<h3 id="-">箭头函数</h3>
+<p>函数的快捷写法，不需要通过 function 关键字创建函数，并且还可以省略 return 关键字。</p>
+<p>同事箭头函数还会继承当前上下文的 this 关键字。</p>
+<p>比如：</p>
+<pre><code class="lang-js">[1, 2, 3].map(x =&gt; x + 1); // [2, 3, 4]
+</code></pre>
+<p>等同于：</p>
+<pre><code class="lang-js">[1, 2, 3].map((function(x){
+  return x + 1;
+}).bind(this));
+</code></pre>
+<h3 id="-import-export">模块的 Import 和 Export</h3>
+<p>import 用于引入模块， export 用于导出模块。</p>
+<p>比如：</p>
+<pre><code class="lang-js">// 引入全部
+import dva from &#39;dva&#39;;
+
+// 引入部分
+import { connect } from &#39;dva&#39;;
+import { Link, Route } from &#39;dva/router&#39;;
+
+// 引入全部并作为 github 对象
+import * as github from &#39;./services/github&#39;;
+
+// 导出默认
+export default App;
+// 部分导出，需 import { App } form &#39;./file&#39; 引入
+export class App extend Component {};
+</code></pre>
+<h3 id="es6-">ES6 对象和数组</h3>
+<h4 id="-">析构赋值</h4>
+<p>析构赋值让我们从 Object 或 Array 里取部分数据存为变量。</p>
+<pre><code class="lang-js">// 对象
+const user = { name: &#39;guanguan&#39;, age: 2 };
+const { name, age } = user;
+console.log(`${name} : ${age}`); // guanguan : 2
+
+// 数组
+const arr = [1, 2];
+const [foo, bar] = arr;
+console.log(foo); // 1
+</code></pre>
+<p>我们也可以析构传入的函数参数。</p>
+<pre><code class="lang-js">const add = (state, { payload }) =&gt; {
+  return state.concat(payload); // 这个地方的 return 是否可以省略？？？
+};
+</code></pre>
+<blockquote>
+<p>这个地方的 return 是否可以省略？？？</p>
+</blockquote>
+<p>析构是还可以配 alias ，让代码更具有语义。</p>
+<pre><code class="lang-js">const add = (state, { payload: todo }) =&gt; {
+  return state.concat(todo);
+};
+</code></pre>
+<blockquote>
+<p>alias ？？？</p>
+</blockquote>
+<h4 id="-">对象字面量改进</h4>
+<p>这是析构的反向操作，用于重新组织一个 Object。</p>
+<pre><code class="lang-js">const name = &#39;duoduo&#39;;
+const age = &#39;8&#39;;
+
+const user = { name, age }; // { name: &#39;duoduo&#39;, age: &#39;8&#39; }
+</code></pre>
+<p>定义对象方法时，还可以省去 function 关键字。</p>
+<pre><code class="lang-js">app.model({
+  reducers: {
+    add() {} //等同于add: function() {}
+  },
+  effects: {
+    *addRemote() {} // 等同于 addRemote: function*() {}
+  },
+});
+</code></pre>
+<h4 id="spread-operator">Spread Operator</h4>
+<p>Spread Operator 即3个点 ... ，有几种不同的使用方法。</p>
+<p>可用于组装数组。</p>
+<pre><code class="lang-js">const todos = [&#39;Learn dva&#39;];
+[...todos, &#39;Learn antd&#39;]; // [&#39;Learn dva&#39;, &#39;Learn antd&#39;]
+</code></pre>
+<p>也可用于获取数组的部分项。</p>
+<pre><code class="lang-js">const arr = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;];
+const [first, ...rest] = arr;
+rest; // [&#39;b&#39;, &#39;c&#39;]
+
+// with ignore
+const [first, , ...rest] = arr;
+rest; // [&#39;c&#39;]
+</code></pre>
+<p>还可收集函数参数为数组。</p>
+<pre><code class="lang-js">function directions(first, ...rest){
+  console.log(rest);
+}
+directions(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;); // &#39;b&#39;, &#39;c&#39;
+</code></pre>
+<p>代替apply。</p>
+<pre><code class="lang-js">function foo(x, y, z){}
+const args = [1, 2, 3];
+
+// 下面两句效果相同
+foo.apply(null, args);
+foo(...args);
+</code></pre>
+<p>对于 Object 而言，用于组合成新的 Object。</p>
+<pre><code class="lang-js">const foo = {
+  a: 1,
+  b: 2,
+};
+const bar = {
+  b: 3,
+  c: 2;
+};
+const d = 4;
+
+const ret = { ...foo, ...bar, d }; // { a: 1, b: 3, c: 2, d: 4}
+</code></pre>
+<p>此外，在 JSX 中 Spread Operator 还可用于扩展 props。</p>
+<h3 id="promises-promise-">Promises（Promise？？？）</h3>
+<p>Promise 用于更优雅地处理异步请求。比如发起异步请求：</p>
+<pre><code class="lang-js">fetch(&#39;/api/todos&#39;)
+  .then(res =&gt; res.json())
+  .then(data =&gt; ({ data }))
+  .catch(err =&gt; ({ err }));
+</code></pre>
+<p>定义Promise</p>
+<pre><code class="lang-js">const delay = (timeout) =&gt; {
+  return new Promise(resolve =&gt; {
+    setTimeout(resolve, timeout);
+  });
+};
+
+delay(1000).then(_ =&gt; {
+  console.log(&#39;executed&#39;);
+});
+</code></pre>
+<blockquote>
+<p>_ =&gt; {} ？？？</p>
+</blockquote>
+<h3 id="generators">Generators</h3>
+<p>dva 的 effects 是通过 generator 组织的。 Generator 返回的是迭代器，通过 yield 关键字实现暂停功能。</p>
+<p>这是一个典型的 dva effect ，通过 yield 把异步逻辑通过同步的方式组织起来。</p>
+<pre><code class="lang-js">app.model({
+  namespace: &#39;todos&#39;,
+  effects: {
+    *addRemote({ payload: todo }, { put, call }){
+      yield call(addTodo, todo);
+      yield put({ type: &#39;add&#39;, payload: todo });
+    },
+  },
+});
+</code></pre>
+<h2 id="react-component">React Component</h2>
+<h3 id="stateless-functional-components">Stateless Functional Components</h3>
+<p>React Component 有 3 种定义方式，分别是 React.createClass, class 和 Stateless Functional Component。推荐尽量使用最后一种，保持简洁和无状态。这是函数，不是   Object，没有 this 作用域，而是 pure function（纯函数）。</p>
+<p>比如定义 App Component：</p>
+<pre><code class="lang-js">function App(props){
+ function handleClick(){
+   props.dispatch({ type: &#39;app/create&#39; });
+ };
+ return &lt;div onClick=&quot;handleClick&quot;&gt;${props.name}&lt;/div&gt;
+};
+</code></pre>
+<p>等同于：</p>
+<pre><code class="lang-js">class App extends React.Component {
+  handleClick(){
+    this.props.dispatch({ type: &#39;app/create&#39; });
+  }
+  render(){
+    return &lt;div oClick={this.handleClick.bind(this)}&gt;${this.props.name}&lt;/div&gt;
+  }
+}
+</code></pre>
+<h3 id="jsx">JSX</h3>
+<h4 id="component-">Component 嵌套</h4>
+<p>类似 HTML， JSX 里可以给组件添加子组件。</p>
+<pre><code class="lang-js">&lt;App&gt;
+  &lt;Header /&gt;
+  &lt;MainContent /&gt;
+  &lt;Footer /&gt;
+&lt;/App&gt;
+</code></pre>
+<h4 id="classname">className</h4>
+<p>class 是保留字，所以添加样式时，需用 className 代替 class。</p>
+<pre><code>&lt;h1 className=&quot;fancy&quot;&gt;Hello dva&lt;/h1&gt;
+</code></pre><h4 id="javascript-">JavaScript 表达式</h4>
+<p>JavaScript 表达式需要用 {} 括起来，会执行并返回结果。</p>
+<p>比如：</p>
+<pre><code>&lt;h1&gt;{ this.props.title }&lt;/h1&gt;
+</code></pre><h4 id="mapping-array-to-jsx">Mapping Array to JSX</h4>
+<p>可以把数组映射为 JSX 元素列表。</p>
+<pre><code>&lt;ul&gt;
+  { this.props.todos.map((todo, i) =&gt; &lt;li key={i}&gt;{ todo }&lt;/li&gt;) }
+&lt;/ul&gt;
+</code></pre><h4 id="-">注释</h4>
+<p>尽量不要用 // 做单行注释</p>
+<h4 id="spread-attributes">Spread Attributes</h4>
+<p>这是 JSX 从 ECMAScript6 借鉴过来的很有用的特性，用于扩展组件 props。</p>
+<p>比如：</p>
+<pre><code class="lang-js">const attrs ={
+  href: &#39;http://example.org&#39;,
+  target: &#39;_blank&#39;,
+};
+&lt;a {...attrs}&gt;Hello&lt;/a&gt;
+</code></pre>
+<p>等同于</p>
+<pre><code class="lang-js">const attrs ={
+  href: &#39;http://example.org&#39;,
+  target: &#39;_blank&#39;,
+};
+&lt;a href={attrs.href} target={attrs.target}&gt;Hello&lt;/a&gt;
+</code></pre>
+<h3 id="props">Props</h3>
+<p>数据处理在 React 中是非常重要的概念之一，分别可以通过 props， state 和 context 来处理数据。而在 dva 应用里，你只需要关心 props。</p>
+<h4 id="proptypes">propTypes</h4>
+<p>JavaScript 是弱类型语言，所以请尽量声明 propTypes 对 Props 进行校验，以减少不必要的问题。</p>
+<pre><code class="lang-js">function App(props){
+  return &lt;div&gt;{props.name}&lt;/div&gt;
+};
+App.propTypes = {
+  name: React.PropTypes.string.isRequired,
+};
+</code></pre>
+<p>内置的 prop type 有：</p>
+<ul>
+<li>PropTypes.array</li>
+<li>PropTypes.bool</li>
+<li>PropTypes.func</li>
+<li>PropTypes.number</li>
+<li>PropTypes.object</li>
+<li>PropType.string</li>
+</ul>
+<h4 id="-">往下传数据</h4>
+<p><img src="https://camo.githubusercontent.com/ed04df6d56d8555cf99a754296b60f569b371663/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f4e417a654d79556f504d71786652762e706e67" alt=""></p>
+<h4 id="-">往上传数据</h4>
+<p><img src="https://camo.githubusercontent.com/a8ffad4e9534c1d1c651f10baa55c37250118b8d/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f66694b4b67444775454a66537678762e706e67" alt=""></p>
+<h3 id="css-modules">CSS Modules</h3>
+<p>一张图理解 CSS Modules 的工作原理：<img src="https://camo.githubusercontent.com/d1341a45402a32a6112f7a99cd99341eab2abbad/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f535742775754625a4b7178774550712e706e67" alt=""></p>
+<p>button class 在构建之后会被重命名为 ProductList_button_1FU0u 。 button 是 local name ，而 ProductList_button_1FU0u 是 global name 。你可以用简短的描述性名字，而不需要关心命名冲突问题。</p>
+<p>然后你要做的全部事情就是在 css/less 文件里写 .button {...} ，并在组件里通过 styles.button 来引用他。</p>
+<h4 id="-css">定义全局 CSS</h4>
+<p>CSS Modules 默认是局部作用域，想要声明一个全局规则，可用 :global 语法。</p>
+<p>比如：</p>
+<pre><code class="lang-css">.title{
+  color: red;
+}
+:global(.title){
+  color: green;
+}
+</code></pre>
+<p>然后在引用的时候：</p>
+<pre><code class="lang-jsx">&lt;App className={sytle.title} /&gt; // red
+&lt;App class=&quot;title&quot; /&gt;           // green
+</code></pre>
+<h4 id="classnames-package">classnames Package</h4>
+<p>在一些复杂的场景中，一个元素可能对应多个 className， 而每个 className 又基于一些条件来决定是否出现。这时， classnames 这个库就非常有用。</p>
+<pre><code class="lang-jsx">import classnames from &#39;classnames&#39;;
+
+const App = (props) =&gt; {
+  const cls = classnames({
+    btn: true,
+    btnLarge: props.type === &#39;submit&#39;,
+    btnSmall: props.type === &#39;edit&#39;,
+  });
+  return &lt;div className={ cls } /&gt;
+}
+</code></pre>
+<p>这样，传入不同的 type 给 App 组件，就会返回不同的 className 组合：</p>
+<pre><code class="lang-jsx">&lt;App type=&quot;submit&quot; /&gt; // btn btnLarge
+&lt;App type=&quot;edit&quot; /&gt;   // btn btnSmall
+</code></pre>
+<h2 id="reducer">Reducer</h2>
+<p>reducer 是一个纯函数，接受 state 和 action ， 返回老的或新的 state。即： (state, action) =&gt; state</p>
+<h3 id="-">增删改</h3>
+<p>以 todos 为例：</p>
+<pre><code class="lang-jsx">app.model({
+  namespace: &#39;todos&#39;,
+  state: [],
+  reducers: {
+    add(state, { payload: todo }) {
+      return state.concat(todo);
+    },
+    remove(state, { payload: id }) {
+      return state.filter(todo =&gt; todo.id !== id);
+    },
+    update(state, { payload: updatedTod }) {
+      return state.map(todo =&gt; {
+        if (todo.id === updatedTodo.id){
+          return { ...todo, ...updatedTodo };
+        } else {
+          return todo;
+        }
+      });
+    },
+  },
+});
+</code></pre>
+<h3 id="-">嵌套数据的增删改</h3>
+<p>建议最多一层嵌套，以保持 state 的扁平化，深层嵌套会让 reducer 很难写和难以维护。</p>
+<pre><code class="lang-jsx">app.model({
+  namespace: &#39;app&#39;,
+  state: {
+    todos: [],
+    loading: false,
+  },
+  reducers: {
+    add(state, { payload: todo }) {
+      const todos = state.todos.concat(todo);
+      return { ...state, todos };
+    },
+  },
+});
+</code></pre>
+<h2 id="effect">Effect</h2>
+<h3 id="put">put</h3>
+<p>用户触发 action</p>
+<pre><code class="lang-jsx">yield put({ type: &#39;todos/add&#39;, payload: &#39;Learn Dva&#39; });
+</code></pre>
+<h3 id="call">call</h3>
+<p>用于调用异步逻辑，支持 Promise。</p>
+<pre><code class="lang-jsx">const result = yield call(fetch, &#39;/todos&#39;);
+</code></pre>
+<h3 id="select">select</h3>
+<p>用于从 state 里获取数据。</p>
+<pre><code class="lang-jsx">const todos yield select(state =&gt; state.todos);
+</code></pre>
+<h2 id="-">错误处理</h2>
+<h3 id="-">全局错误处理</h3>
+<p>dva 里， effects 和 subscriptions 的抛错全部会走 onError hook。所以可以在 onError 里统一处理错误。</p>
+<pre><code class="lang-jsx">const app = dva({
+  onError(e, dispatch){
+    console.log(e.message);
+  },
+});
+</code></pre>
+<p>然后 effects 里的抛错和 reject 的 promise 就都会被捕获了。</p>
+<h3 id="-">本地错误处理</h3>
+<p>如果需要对某些 effects 的错误进行特殊处理，需要在effect 内部加上 trt catch。</p>
+<pre><code class="lang-jsx">app.model({
+  effects: {
+    *addRemote() {
+      try{
+        // your code here
+      } catch(e){
+        console.log(e.message);
+      }
+    },
+  },
+});
+</code></pre>
+<h2 id="-">异步请求</h2>
+<p>异步请求基于 whatwg-fetch，API 详见： <a href="https://github.com/github/fetch">https://github.com/github/fetch</a></p>
+<h3 id="get-post">GET 和 POSt</h3>
+<pre><code class="lang-jsx">import request from &#39;../utils/request&#39;;
+
+// GET
+request(&#39;/api/todos&#39;);
+
+// POST
+request(&#39;/api/todos&#39;, {
+  method: &#39;POST&#39;,
+  body: JSON.stringify({ a: 1}),
+});
+</code></pre>
+<h3 id="-">统一错误处理</h3>
+<p>加入约定后台返回以下格式时，做统一的错误处理。</p>
+<pre><code class="lang-js">{
+  status: &#39;error&#39;,
+  message: &#39;&#39;,
+}
+</code></pre>
+<p>编辑 utils/request.js ，加入以下中间件：</p>
+<pre><code class="lang-js">function parseErrorMessage({ data }) {
+  const { status, message } = data;
+  if (status === &#39;error&#39;) {
+    throw new Error(message);
+  }
+  return { data };
+}
+</code></pre>
+<p>然后，这类错误就会走到 onError hook 里。</p>
+<h2 id="subscription">Subscription</h2>
+<p>subscriptions 是订阅，用于订阅一个数据源，然后根据需要 dispatch 相应的 action。数据源可以是当前的时间、服务器的 websocket 连接、keyboard 输入、 geolocation 变化、 history 路由变化等等。格式为 ({ dispatch, history }) =&gt; unsubscribe 。</p>
+<h3 id="-">异步数据初始化</h3>
+<p>比如：当用户进入 /users 页面时。触发 action users/fetch 加载用户数据。</p>
+<pre><code class="lang-jsx">app.model({
+  subscriptions: {
+    setup({ dispatch, history }){
+      history.listen(( pathname ) =&gt; {
+        if (pathname === &#39;/users&#39;){
+          dispatch({
+            type: &#39;users/fetch&#39;,
+          });
+        }
+      });
+    },
+  },
+});
+</code></pre>
+<h4 id="path-to-regexp-pachage">path-to-regexp Pachage</h4>
+<p>如果 url 规格比较复杂，比如 /users/:userId/search ，那么匹配和 userId 的获取都会比较麻烦。这是（时？？？）推荐用 path-to-regexp 简化这部分逻辑。</p>
+<pre><code class="lang-jsx">import pathToRegexp from &#39;path-to-regexp&#39;;
+
+// in subscription
+const match = pathToRegexp(&#39;/users/userId/search&#39;).exec(pathname);
+if (match){
+  const userId = match[1];
+  // dispatch action with userId
+}
+</code></pre>
+<h2 id="router">Router</h2>
+<h3 id="config-with-jsx-element-router-js-">Config with JSX Element (router.js)</h3>
+<pre><code class="lang-jsx">&lt;Route path=&quot;/&quot; component={App}&gt;
+  &lt;Route path=&quot;accounts&quot; component={Accounts} /&gt;
+  &lt;Route path=&quot;statements&quot; component={Statements}&gt;
+&lt;/Route&gt;
+</code></pre>
+<h3 id="route-components">Route Components</h3>
+<p>Route Components 是指 ./src/routers/ 目录下的文件，他们是 ./src/router.js 里匹配的 Component。</p>
+<h4 id="-connect-">通过 connect 绑定数据</h4>
+<p>比如：</p>
+<pre><code class="lang-jsx">import { connect } from &#39;dva&#39;;
+
+function mapStateToProps(state, ownProps){
+  return {
+    users: state.users,
+  };
+}
+export default connect(mapStateToProps)(App);
+</code></pre>
+<p>然后 App 里就有了 dispatch 和 users 两个属性。</p>
+<blockquote>
+<p>dispatch 从哪里来的？？？</p>
+</blockquote>
+<h4 id="injected-props-e-g-location-">Injected Props（e.g. location）（内置属性）</h4>
+<p>Route Component 会有额外的 props 用以获取路由信息。</p>
+<ul>
+<li><p>location</p>
+</li>
+<li><p>params</p>
+</li>
+<li><p>children</p>
+</li>
+</ul>
+<p>更多详见： <a href="https://github.com/ReactTraining/react-router/blob/v2.8.1/docs/guides/RouteConfiguration.md">react-router</a></p>
+<h3 id="-action-">基于 action 进行页面跳转</h3>
+<pre><code class="lang-jsx">import { routerRedux } from &#39;dva/router&#39;
+
+// Inside Effects
+yield put(routerRedux.push(&#39;/logout&#39;));
+
+// Outside Effects
+dispatch(routerRedux.push(&#39;/logout&#39;));
+
+// With query
+routerRedux.push({
+  pathname: &#39;logout&#39;,
+  query: {
+    page: 2,
+  },
+});
+</code></pre>
+<p>除了 push(location) 外还有更多方法，详见 <a href="https://github.com/reactjs/react-router-redux#pushlocation-replacelocation-gonumber-goback-goforward">react-router-redux</a></p>
+<h2 id="dva-">dva 配置</h2>
+<h3 id="redux-middleware">Redux Middleware</h3>
+<p>比如要添加 redux-logger 中间件：</p>
+<pre><code class="lang-jsx">import createLogger from &#39;redux-logger&#39;;
+
+const app = dva({
+  onAction: createLogger(),
+});
+</code></pre>
+<p>注：onAction 支持数组，可同时传入多个中间件。</p>
+<h3 id="history">history</h3>
+<h4 id="-history-browserhistory">切换 history 为 browserHistory</h4>
+<pre><code class="lang-jsx">import { browserHistory } from &#39;dva/router&#39;;
+
+const app = dva({
+  history: browserHistory,
+});
+</code></pre>
+<h4 id="-hashhistory-_k-">去除 hashHistory 下的 _k 查询参数</h4>
+<pre><code class="lang-jsx">import { useRouterHistory } from &#39;dva/router&#39;;
+import { createHashHistory } from &#39;hisroty&#39;;
+
+const app = dva({
+  history: useRouterHistory(createHashHistory)({ queryKey: false }),
+});
+</code></pre>
+<h2 id="-">工具</h2>
+<h3 id="-dva-cli-">通过 dva-cli 创建项目</h3>
+<p>先安装 dva-cli 。</p>
+<pre><code class="lang-shell">$ npm install dva-cli -g
+</code></pre>
+<p>然后创建项目。</p>
+<pre><code class="lang-sh">$ dva new myapp
+</code></pre>
+<p>最后，进入目录并启动。</p>
+<pre><code>cd myapp
+npm start
+</code></pre>
