@@ -1,4 +1,6 @@
-# [dva 知识地图](https://github.com/dvajs/dva-knowledgemap)
+# dva 知识地图
+
+[原文地址](https://github.com/dvajs/dva-knowledgemap)
 
 不知道大家学习 react 或 dva 时会不会有这样的疑惑：
 
