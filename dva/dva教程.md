@@ -143,3 +143,131 @@ name: function(){}
 
 根据样例项目的情况，由于数据跟业务状态关联性强，所以我们采用 业务维度 的方式来设计我们的 model ，在设计好了 users model 的基本形态以后，接下来在写代码的过程中我们会不断完善。
 
+
+## 组件设计方法
+
+在初步确定了 model 的设计方法以后，让我们来看看如何设计 dva 的 React 组件。
+
+### 组件设计
+
+React 应用是由一个个独立的 Component 组成的，我们在拆分 Component 的过程中要尽量让每个 Component 专注做自己的事。
+
+一般来说，我们的组件有两种设计：
+
+1. Container Component
+
+2. Presentational Component
+
+### Container Component
+
+Container Component 一般指的是具有 `监听数据行为` 的组件，一般来说他们的职责是 `绑定关联的 model 数据` ，以数据容器的角色包含其它子组件，通常在项目中表现出来的类型为： Layouts、Router Components 以及普通的 Containers 组件。
+
+通常的书写形式为：
+
+```js
+import React, { Component, PropTypes } from 'react';
+
+// dva 的 connect 方法可以进组件和数据关联在一起
+import { connect } from 'dva';
+
+// 组件本身
+const MyComponent = (props) => {};
+MyComponect.propTypes = {};
+
+// 监听属性，建立组件和数据的映射关系
+function mapStateToProps(state){
+  return { ...state.data };
+}
+
+// 关联 model
+export default connect(mapStateToProps)(MyComponect);
+```
+
+### Presentational Component
+
+Presentational Component 的名称已经说明了它的职责，展示形组件，一般也称作： Dumb Component ，它不会关联订阅 model 上的数据，而所需数据的传递则是通过 props 传递到组件内部。
+
+通常的书写的形式：
+
+```js
+import React, { Component, PropTypes } from 'react';
+
+// 组件本身
+// 所需要的数据通过 Container Component 通过 props 传递下来
+const MyComponent = (props)=>{}
+MyComponent.propTypes = {};
+
+// 并不会监听数据
+export default MyComponent;
+```
+
+### 对比
+
+对组件分类，主要有两个好处：
+
+1. 让项目的数据处理更加集中
+
+2. 让组件高内聚低耦合，更加聚焦
+
+试想如果每个组件都去订阅数据 model ，那么一方面组件本身跟 model 耦合太多，另一方面代码过于零散，到处都在操作数据，会带来后期维护的烦恼。
+
+除了写法上订阅数据的区别以外，在设计思路上两个组件也有很大的不同。 Presentational Component 是独立的纯粹的，这方面很好的例子，大家可以参考 [ant.design UI组件的React实现](https://ant.design/docs/react/introduce-cn) ，每个组件跟业务数据并没有耦合关系，只是完成自己独立的任务，需要的数据通过 props 传递进来，需要操作的行为通过接口暴露出去。而 Conatainer Component 更像是状态管理器，它表现为一个容器，订阅子组件需要的数据，组织子组件的交互逻辑和展示。
+
+## 组件设计实践
+
+建议对照完整代码一起看 [dva-example-user-dashboard](https://github.com/dvajs/dva-example-user-dashboard) 。
+
+按照之前快速上手的内容，我们可以使用 dva-cli 工具快速生成规范的目录，在命令行输入：
+
+```shell
+$ mkdir myApp && cd myApp
+$ dva init
+```
+
+现在，规范的样例模板我们已经有了，接下来我们一步一步添加自己的东西，看看如何完成我们的组件设计。
+
+### 设置路由
+
+在准备好了 dva 的基本框架以后，需要为我们的项目配置一下路由，这里首先设置 User Router Container 的访问路径，并且在 /routes/ 下创建我们的组件文件 User.jsx 。
+
+```js
+// src/router.js
+import React, { PropTypes } from 'react';
+import { Router, Route } from 'dva/router';
+import Users from './routes/User';
+
+export default function ({ history }){
+  return (
+    <Router history={history}>
+      <Route path="/users" component={User} />
+    </Router>
+  );
+};
+```
+
+```jsx
+// src/routes/Users.jsx
+import React, { PropTypes } from 'react';
+
+function Users(){
+  return (
+    <div>User Router Componect</div>
+  );
+}
+
+Users.propTypes = {
+
+};
+
+export default Users;
+```
+
+其他路由可以自行添加，关于路由更多信息，可以查看 react-router 获取更多内容。
+
+### Users Container Component 的设计
+
+基础工作都准备好了，接下来就开始设计 Users Container Component 。在本项目中 Users Container 的表现为 Route Components （这也是 dva 推荐的结构划分），可以理解页面维度的容器，所以我们在 /routes/ 下加入 Users.jsx 。
+
+我们采用 自顶向下 的设计方法，修改 ./src/routes/Users.jsx 如下：
+
+
