@@ -815,8 +815,8 @@ const app = dva({
 #### 去除 hashHistory 下的 \_k 查询参数
 
 ```jsx
-import { useRouterHistory, createHashHistory } from 'dva/router';
-// import { createHashHistory } from 'hisroty';
+import { useRouterHistory } from 'dva/router';
+import { createHashHistory } from 'history';
 
 const app = dva({
   history: useRouterHistory(createHashHistory)({ queryKey: false }),
