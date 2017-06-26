@@ -270,4 +270,220 @@ export default Users;
 
 我们采用 自顶向下 的设计方法，修改 ./src/routes/Users.jsx 如下：
 
+```jsx
+// ./src/routes/Users.jsx
+import React, { Component, PropTypes } from 'react';
 
+// Users 的 Presentational Component
+// 暂时都没实现
+import UserList from '../components/Users/UserList';
+import UserSearch from '../components/Users/UserSearch';
+import UserModal from '../components/Users/UserModal';
+
+// 引入对应的样式
+// 可以暂时新建一个空的
+import styles from './Users.less';
+
+function Users(){
+  const userSearchProps = {};
+  const userListProps = {};
+  const userModalProps = {};
+
+  return (
+    <div className={styles.normal}>
+      {/* 用户筛选搜索框 */}
+      <UserSearch {...userSearchProps} />
+      {/* 用户信息展示列表 */}
+      <UserList {...userListProps} />
+      {/* 添加用户 & 修改用户弹出的浮层 */}
+      <UserModal {...userModalProps} />
+    </div>
+  );
+}
+
+export default Users;
+```
+
+其中， UserSearch 、 UserList 、 UserModal 我们还未实现，不过我们可以暂时让他们输出一段话，表示占位，基本的数据结构表现的很清楚， User Router Container 由这三个 Presentational Components 组成。（其中 {...x} 的用法可以参看 es6）
+
+```jsx
+// ./src/components/Users/UserSearch.jsx
+import React, { PropTypes } from 'react';
+export default () => <div>user search</div>;
+```
+
+```jsx
+// ./src/components/Users/UserList.jsx
+import React, { PropTypes } from 'react';
+export default () => <div>user list</div>;
+```
+
+```jsx
+// ./src/components/Users/UserModal.jsx
+import React, { PropTypes } from 'react';
+export default () => <div>user modal</div>;
+```
+现在如果你的本地环境是成功的，访问 http://127.0.0.1:8989/#/users 浏览器中看到：
+
+![](https://camo.githubusercontent.com/a0ae436be0feb946f9ab9416fe2540083ef21460/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f517547736b687471556a4f6e785a4e2e706e67)
+
+### Userlist 组件
+
+暂时放下 <UserSearch /> 和 <UserModal /> ，先来看看 <UserList /> 的实现，这是一个用户的展示列表，我们期望只需要把数据传入进去，修改 ./src/components/Users/UserList.jsx ：
+
+```jsx
+// ./src/components/Users/UserList.jsx
+import React, { Component, PropTypes } from 'react';
+
+// 采用 antd 的 UI 组件
+import { Table, message, Popconfirm } from 'antd';
+
+// 采用 stateless
+const UserList = ({
+  total,
+  current,
+  loading,
+  dataSource,
+}) => {
+  const columns = [{
+    title: '姓名',
+    dataIndex: 'name',
+    key: 'name',
+    render: (text) => <a href="#">{text}</a>,
+  }, {
+    title: '年龄',
+    dataIndex: 'age',
+    key: 'age',
+  }, {
+    title: '住址',
+    dataIndex: 'address',
+    key: 'address',
+  }, {
+    title: '操作',
+    key: 'operation',
+    render: (text, record) => (
+      <p>
+        <a onClick={()=>{}}>编辑</a>
+        &nbsp;
+        <Popconfirm title="确定要删除吗？" onConfirm={()=>{}}>
+          <a>删除</a>
+        </Popconfirm>
+      <p>
+    ),
+  }];
+
+  const pagination = {
+    total,
+    current,
+    pageSize: 10,
+    onChange: ()=>{},
+  };
+
+  return (
+    <div>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        loading={loading}
+        rowKey={record => record.id}
+        pagination={pagination}
+      />
+    </div>
+  );
+}
+
+export default UserList;
+```
+
+为了方便起见，我们这里使用一个优秀的 UI 组件库 antd 。 antd 提供了 table 组件，可以让我们方便的展示相关数据，具体使用方式可以参看其文档。
+
+需要注意的是，由于我们采用了 antd ，所以我们需要在我们的代码中添加样式，可以在 ./src/index.jsx 中添加一行：
+
+```jsx
+import 'antd/dist/antd.css';
+```
+
+这样我们使用的 antd 组件就可以展示出样子了：
+
+![](https://camo.githubusercontent.com/40cd32be14db69d47f2cf0eed2da501239b1e749/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f5946594474766741436c684d5152752e706e67)
+
+其中我们发现，在我们设计 UserList 的时候，需要将分页信息 total 、 current 以及加载状态信息 loading 也传入进来，所以现在使用 UserList 就需要这样：
+
+```jsx
+<UserList
+  current={current}
+  total={total}
+  dataSource={list}
+  loading={loading}
+/>
+```
+
+接下来，我们回到 User Router Container 模拟一些静态数据，传入 UserList ，让其展示数据。
+
+### UserList 添加静态数据
+
+```jsx
+// ./src/routes/Users.jsx
+import React, { Component, PropTypes } from 'react';
+
+// Users 的 Presentational Component
+// 暂时都没实现
+import UserList from '../components/Users/UserList';
+import UserSearch from '../components/Users/UserSearch';
+import UserModal from '../components/Users/UserModal';
+
+// 引入对应的样式
+// 可以暂时新建一个空的
+import styles from './Users.less';
+
+function Users(){
+  const userSearchProps = {};
+  const userListProps = {
+    total: 3,
+    current: 1,
+    loading: false,
+    dataSource: [{
+      name: '张三',
+      age: 23,
+      address: '成都',
+    }, {
+      name: '李四',
+      age: 24,
+      address: '杭州',
+    }, {
+      name: '王五',
+      age: 25,
+      address: '上海',
+    }],
+  };
+  const userModalProps = {};
+
+  return (
+    <div className={styles.normal}>
+      {/* 用户筛选搜索框 */}
+      <UserSearch {...userSearchProps} />
+      {/* 用户信息展示列表 */}
+      <UserList {...userListProps} />
+      {/* 添加用户 & 修改用户弹出的浮层 */}
+      <UserModal {...userModalProps} />
+    </div>
+  );
+}
+
+Users.propTypes = {
+  users: PropTypes.object,
+};
+
+export default Users;
+```
+
+传入了静态数据以后，组件的表现如下：
+
+![](https://camo.githubusercontent.com/d44a2b2f8a8ada62e8e7b90457be6be7d054dfc9/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f484944684c534e4567794e6e5651442e706e67)
+
+### 组件设计小结
+
+虽然我们上面实现的代码很简单，但是已经包含了组件设计的主要思路，可以看到 UserList 组件是一个很纯粹的 Presentational Component ，所需要的数据以及状态是通过 User Router Component 传递的，我们现在还是用的静态数据，接下来我们来看看如何在 model 创建 reducer 来将我们的数据抽取出来。
+
+
+## 添加 Reducers
