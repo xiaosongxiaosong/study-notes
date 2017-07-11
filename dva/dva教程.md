@@ -487,3 +487,371 @@ export default Users;
 
 
 ## 添加 Reducers
+
+### 理解 Reducers
+
+首先需要理解什么是 reducer ， dva 中 reducer 的概念，主要是来源于下层封装的 redux ，在 dva 中 reducers 主要负责修改 model 的数据 （ state ）。
+
+也许你在迷惑，为什么会叫做 reducer 这个名字，你或许知道 reduce 这个方法，在很多程序语言中，数组类型都具备 reduce 方法，而这个方法的功能就是聚合，比如下面这个在 JavaScript 中的例子：
+
+```js
+[{x: 1}, {y: 2}, {z: 3}].reduce(function(pre, next){
+  return Object.assign(pre, next);
+});
+// return {x: 1, y: 2, z: 3}
+```
+
+可以看到，在上面的这个例子中，我将三个对象合并成一个对象，这就是 reducer 的实现， model 的数据就是通过我们分离出来的 reducer 创建出来的，这样可以让每个 reducer 专注于相关数据的修改，但是最终会构建出完整的数据。
+
+如果你想了解更多，可以参看 [Redux Reducers](http://cn.redux.js.org/docs/basics/Reducers.html)。
+
+### 给 Users Model 添加 Reducers
+
+回到我们之前的 /models/users.js ，我们在之前已经定义好了它的 state ，接下来我们看看如何根据新的数据来修改本身的 state，这就是 reducers 要做的事情。
+
+```js
+export default {
+  namespace: 'users',
+
+  state: {
+    list: [],
+    total: null,
+    loading: false, // 控制加载状态
+    current: null,  // 当前分页信息
+    currentItem: {}, // 当前操作的对象
+    modalVisible: false, // 弹出窗的显示状态
+    modalType: 'create', // 弹出窗的类型（添加用户，编辑用户）
+  },
+  effects: {
+    *query(){},
+    *create(){},
+    *'delete'(){},
+    *update(){},
+  },
+  reducers: {
+    showLoading(){},  // 控制加载状态的 reducer
+    showModal(){},    // 控制 Modal 显示状态的 reducer
+    hideModal(){},
+    // 使用静态数据返回
+    querySuccess(state){
+      const mock = {
+        total: 3,
+        current: 1,
+        loading: false,
+        list: [{
+          id: 1,
+          name: '张三',
+          age: 23,
+          address: '成都',
+        }, {
+          id: 2,
+          name: '李四',
+          age: 24,
+          address: '杭州',
+        }, {
+          id: 3,
+          name: '王五',
+          age: 25,
+          address: '上海',
+        },],
+      };
+      return {...state, ...mock, loading: false};
+    },
+    createSuccess(){},
+    deletSuccess(){},
+    updateSuccess(){},
+  }
+}
+```
+我们把之前 UserList 组件中模拟的静态数据，移动到了 reducers 中，通过调用 'users/query/success' 这个 reducer ，我们就可以将 Users Modal 的数据变成静态数据，那么我们如何调用这个 reducer ，能够让这个数据传入 UserList 组件呢，接下来需要做的是：关联Modal。
+
+### 关联 Model
+
+```js
+// ./src/routes/Users.jsx
+import React, { Component, PropTypes } from 'react';
+
+// 引入 connect 工具函数
+import { connect } from 'dva';
+
+// Users 的 Presentational Component
+// 暂时都没实现
+import UserList from '../components/Users/UserList';
+import UserSearch from '../components/Users/UserSearch';
+import UserModal from '../components/Users/UserModal';
+
+// 引入对应的样式
+// 可以暂时新建一个空的
+import style from './Users.less';
+
+function Users({ location, dispatch, users }) {
+  const {
+    loading, list, total, current,
+    currentItem, modalVisible, modalType
+  } = users;
+
+  const userSearchProps = {};
+  const userListProps = {
+    dataSource: list,
+    total,
+    loading,
+    current,
+  };
+  const userModalProps = {};
+
+  return (
+    <div className={styles.normal}>
+      {/* 用户筛选搜索框 */}
+      <UserSearch {...userSearchProps} />
+      {/* 用户信息展示列表 */}
+      <UserList {...userListProps} />
+      {/* 添加用户 & 修改用户弹出的浮层 */}
+      <UserModal {...userModalProps} />
+    </div>
+  );
+}
+
+Users.propTypes = {
+  users: PropTypes.object,
+};
+
+// 指定订阅数据，这里关联了 users
+function mapStateToProps({ users }){
+  return {users};
+}
+
+// 建立数据关联关系
+export default connect(mapStateToProps)(Users);
+```
+
+在之前的组件设计中讲到了 Presentational Component 的设计概念，在订阅了数据以后，就可以通过 props 访问到 model 的数据了，而 UserList 展示组件的数据，也是 Container Component 通过 props 传递的过来的。
+
+组件和 model 建立了关联关系以后，如何在组件中获取 reducers 的数据呢，或者如何调用 reducers 呢，就是需要发起一个 action。
+
+### 发起 Actions
+
+actions 的概念跟 reducers 一样，也是来自于 dva 封装的 redux，表达的概念是发起一个修改数据的行为，主要的作用是传递信息：
+
+```js
+dispatch({
+  type: '', // action 的名称，与 reducers (effects) 对应
+  ... // 调用时传递的参数，在 reducers (effects) 可以获取
+});
+```
+
+知道了如何发起一个 action ，那么剩下的就是发起的时机了，通常我们建议在组件内部的声明周期发起，比如：
+
+```js
+...
+componentDidMount(){
+  this.props.dispatch({
+    type: 'model/action',
+  });
+}
+```
+
+不过在本例中采用另一种发起 action 的场景，在本例中获取用户数据信息的时机就是访问 /users/ 这个页面，所以我们可以监听路由信息，只要路径是 /users/ 那么我们就会发起 action ，获取用户数据：
+
+```js
+// ./src/models/users.js
+import { hashHistory } from 'dva/router';
+
+export default {
+  namespace: 'users',
+
+  state: {
+    list: [],
+    total: null,
+    loading: false,
+    current: null,
+    currentItem: {},
+    modalVisible: false,
+    modalType: 'create',
+  },
+  subscriptions: {
+    setup({ dispatch, history }){
+      history.listen(location => {
+        if (location.pathname === '/users') {
+          dispatch({
+            type: 'querySuccess',
+            payload: {},
+          });
+        }
+      });
+    },
+  },
+
+  effects: {
+    *query(){},
+    *create(){},
+    *'delete'(){},
+    *update(){},
+  },
+
+  reducers: {
+    showLoading(){},
+    showModal(){},
+    hideModal(){},
+    querySuccess(state){
+      const mock = {
+        total: 3,
+        current: 1,
+        loading: false,
+        list: [{
+          name: '张三',
+          age: 23,
+          address: '成都',
+        }, {
+          name: '李四',
+          age: 24,
+          address: '杭州',
+        }, {
+          name: '王五',
+          age: 25,
+          address: '上海',
+        },],
+      };
+
+      return {...state, ...mock, loading: false};
+    },
+    createSuccess:(){},
+    deleteSuccess:(){},
+    updateSuccess:(){},
+  },
+}
+```
+
+以上代码在浏览器访问 /users 路径的时候就会发起一个 action ，数据准备完毕，别忘了回到 index.js 中，添加我们的 models : 
+
+```js
+// ./src/index.js
+import './index.html';
+import './index.less';
+import dva, { connect } from 'dva';
+
+import 'antd/dist/antd.css';
+
+// 1. Initialize
+const app = dva();
+
+// 2. Model
+app.model(require('./models/users.js'));
+
+// 3. Router
+app.router(require('./router'));
+
+// 4. Start
+app.start(document.getElementById('root'));
+```
+
+如果一切正常，访问 ：[http://127.0.0.1:8989/#/users]() ，可以看到：
+
+![](https://camo.githubusercontent.com/e40bab1b89abc366004b680699e95798498a3d5e/68747470733a2f2f7a6f732e616c697061796f626a656374732e636f6d2f726d73706f7274616c2f56456168714275737a67694169667a2e706e67)
+
+### 小结
+
+在这个例子中，我们在合适的时机（进入 /users/ ）发起（ dispatch ）了一个 action ，修改了 model 的数据，并且通过 Container Components 关联了 model ，通过 props 传递到 Presentation Components ，组件成功显示。如果你想了解更多关于 reducers & actions 的信息，可以参看 [redux](http://redux.js.org/) 。
+
+
+## 添加 Effects
+
+在之前的教程中，我们已经完成了静态数据的操作，但是在真实场景中，数据都是从服务器来的，我们需要发起异步请求，在请求回来以后设置数据，更新 state ，那么在 dva 中，这一切是怎么操作的呢，首先我们先来简单了解一下 Effects 。
+
+### 理解 Effects
+
+Effects 来源于 dva 封装的底层库 redux-sagas 的概念，主要指的是处理 Side Effects ，指的是副作用（源于函数式编程），在这里可以简单理解成异步操作，所以我们是不是可以理解成 Reducers 处理同步，Effects 处理异步？这么理解也没有问题，但是要认清 Reducers 的本质是修改 model 的 state，而 Effects 主要是控制数据流程，所以最终往往我们在 Effects 中会调用 Reducers。
+
+> 在函数式编程中，我们强调纯函数的作用：纯函数是这样一种函数，即相同的输入，永远会得到相同的输出，而且没有任何可观察的副作用，简单的理解就是每个函数职责纯粹，所有行为就是返回新的值，没有其他行为，真实情况最常见的副作用就是异步操作，所以 dva 提供了 effects 来专门放置副作用，不过可以发现的是，由于 effects 使用了 Generator Creator ，所以将异步操作同步化，也是纯函数。
+
+### 给 Users Model 添加 Effects
+
+```js
+// ./src/models/users.js
+import { hashHistory } from 'dva/router';
+//import { create, remove, update, query } from '../services/users';
+
+import request from '../utils/request';
+import qs from 'qs';
+
+async function query(params){
+  return request(`/api/users?${qs.stringify(params)}`);
+};
+
+export default {
+  namespace: 'users',
+
+  state: {
+    list: [],
+    total: null,
+    loading: false,
+    current: null,
+    currentItem: {},
+    modalVisible: false,
+    modalType: 'create',
+  },
+
+  subscriptions: {
+    setup({ dispatch, history }) {
+      history.listen(location => {
+        if (location.pathname === '/users') {
+          dispatch({
+            type: 'query',
+            payload: {}
+          });
+        }
+      });
+    },
+  },
+
+  effects: {
+    *query({ payload }, { select, call, put }){
+      yield put({ type: 'showLoading' });
+      const { data } = yield call(query);
+      if (data){
+        yield put({
+          type: 'querySuccess',
+          payload: {
+            list: data.data,
+            total: data.page.total,
+            current: data.page.current,
+          },
+        });
+      }
+    },
+    *create(){},
+    *'delete'(){},
+    *update(){},
+  },
+
+  reducers: {
+    showLoading(state, action){
+      return { ...state, loading: true };
+    }, // 控制加载状态的 reducer
+    showModal(){}, // 控制 Modal 显示状态的 reducer
+    hideModal(){},
+    // 使用服务器数据返回
+    querySuccess(state, action){
+      return {...state, ...action.payload, loading: false};
+    },
+    createSuccess(){},
+    deleteSuccess(){},
+    updateSuccess(){},
+  },
+};
+```
+首先我们需要增加 *query 第二个参数 *query({payload}, {select, call, put}) ，其中 call 和 put 是 dva 提供的方便操作 effects 的函数，简单理解 call 是调用执行一个函数而 put 则是相当于 dispatch 执行一个 action ，而 select 则可以用来访问其他 model，更多可以参考 redux-saga-in-chinese 。
+
+而在 query 函数里面，可以看到我们处理异步的方式跟同步一样，所以能够很好的控制异步流程，这也是我们使用 Effects 的原因，关于相关的更多内容可以参看 [Generator 函数的含义与用法](http://www.ruanyifeng.com/blog/2015/04/generator.html)。
+
+这里我们把请求的处理直接写在代码里面，接下来我们需要把它拆分到 /servers/ 里面统一处理：
+
+```js
+import request from '../utils/request';
+import qs from 'qs';
+async function query(params) {
+  return request(`/api/users?${qs.stringify(params)}`);
+}
+```
+
+关于 async 的用法，可以参考 [async 函数的含义和用法](http://www.ruanyifeng.com/blog/2015/05/async.html)，需要注意的是，无论是 Generator 函数，yield 亦或是 async 目的只有一个：让异步编程跟同步一样，从而能够很好的控制执行流程。
+
