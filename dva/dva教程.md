@@ -855,3 +855,56 @@ async function query(params) {
 
 关于 async 的用法，可以参考 [async 函数的含义和用法](http://www.ruanyifeng.com/blog/2015/05/async.html)，需要注意的是，无论是 Generator 函数，yield 亦或是 async 目的只有一个：让异步编程跟同步一样，从而能够很好的控制执行流程。
 
+## 定义 Services
+
+之前我们已经：
+1. 设计好了 modal state -> 抽象数据
+2. 完善了组件 -> 完善展示
+3. 添加了 Reducers -> 数据同步处理
+4. 添加了 Effects -> 数据异步处理
+
+接下来就是将请求相关（与后台系统的交互）抽取出来，单独放到 /services/ 中，进行统一维护管理，所以我们只需要将之前定义在 Effects 的以下代码，移动到 /servers/users.js 中即可：
+
+略...
+
+## mock 数据
+
+略...
+
+## 添加样式
+
+略...
+
+## 设计布局
+
+在项目中，我们通常都会有布局组件的概念，常见的场景是整个项目通用的头尾，侧边栏，以及整体布局结构等，这些布局内容被抽象成组件，包含一些布局样式，用于组合其他组件搭建成页面。
+
+说白了，其实它本质上还是一种组件，将布局样式抽象成组件，能够保持子组件和父组件的独立性，不用在其中关键关联到布局信息。
+
+如我们的样例项目中的 MainLayout.jsx :
+```js
+// ./components/MainLayout/MainLayout.jsx
+import React, { PropTypes } from 'react';
+import styles from './MainLayout.less';
+import Header from './Header';
+
+function MainLayout({children, location}){
+  return (
+    <div className={styles.normal}>
+      <Header loction={location} />
+      <div className={styles.content}>
+        <div className={styles.main}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+MainLayout.propTypes = {
+  children: PropTypes.element.isRequired,
+  location: PropTypes.object,
+};
+
+export default MainLayout;
+```
