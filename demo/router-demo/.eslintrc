@@ -2,7 +2,8 @@
   "parser": "babel-eslint",
   "extends": "airbnb",
   "rules": {
-    "linebreak-style": [1, "windows"],
+    "no-underscore-dangle": [0],
+    "linebreak-style": [0, "windows"],
     "generator-star-spacing": [0],
     "consistent-return": [0],
     "react/forbid-prop-types": [0],
