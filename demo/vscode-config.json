@@ -1,0 +1,15 @@
+{
+  "editor.renderWhitespace": "all",
+  "editor.fontSize": 18,
+  "editor.tabSize": 2,
+  "html.format.unformatted": "",
+  "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "editor.minimap.enabled": false,
+  "workbench.iconTheme": "vs-seti",
+  "workbench.colorTheme": "Monokai",
+  "editor.tabCompletion": true,
+  "beautify.tabSize": 2,
+  "beautify.options": {
+    "indent_size": 2
+  }
+}
