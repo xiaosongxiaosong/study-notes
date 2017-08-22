@@ -816,7 +816,7 @@ const app = dva({
 
 ```jsx
 import { useRouterHistory } from 'dva/router';
-import { createHashHistory } from 'hisroty';
+import { createHashHistory } from 'history';
 
 const app = dva({
   history: useRouterHistory(createHashHistory)({ queryKey: false }),
@@ -845,6 +845,3 @@ $ dva new myapp
 cd myapp
 npm start
 ```
-
-
-

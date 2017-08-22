@@ -7,6 +7,6 @@
     "gulp-marked": "^1.0.0"
   },
   "scripts": {
-    "doctoc": "doctoc dva/dva知识地图.md"
+    "dva": "doctoc dva/API.md"
   }
 }
