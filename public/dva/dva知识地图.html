@@ -622,7 +622,7 @@ const app = dva({
 </code></pre>
 <h4 id="-hashhistory-_k-">去除 hashHistory 下的 _k 查询参数</h4>
 <pre><code class="lang-jsx">import { useRouterHistory } from &#39;dva/router&#39;;
-import { createHashHistory } from &#39;hisroty&#39;;
+import { createHashHistory } from &#39;history&#39;;
 
 const app = dva({
   history: useRouterHistory(createHashHistory)({ queryKey: false }),

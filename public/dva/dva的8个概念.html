@@ -1,8 +1,9 @@
+<h1 id="dva-8-">dva 的 8 个概念</h1>
+<p><a href="https://github.com/dvajs/dva/blob/master/docs/Concepts_zh-CN.md">原文地址</a></p>
+<h2 id="-">目录</h2>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-<p><strong>Table of Contents</strong>  <em>generated with <a href="https://github.com/thlorenz/doctoc">DocToc</a></em></p>
 <ul>
-<li><a href="#dva-%E7%9A%84-8-%E4%B8%AA%E6%A6%82%E5%BF%B5">dva 的 8 个概念</a><ul>
 <li><a href="#%E6%95%B0%E6%8D%AE%E6%B5%81%E5%90%91">数据流向</a></li>
 <li><a href="#models">Models</a><ul>
 <li><a href="#state">State</a></li>
@@ -16,11 +17,7 @@
 <li><a href="#router">Router</a></li>
 <li><a href="#route-component">Route Component</a></li>
 </ul>
-</li>
-</ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<h1 id="dva-8-">dva 的 8 个概念</h1>
-<p><a href="https://github.com/dvajs/dva/blob/master/docs/Concepts_zh-CN.md">原文地址</a></p>
 <h2 id="-">数据流向</h2>
 <p>数据的改变发生通常是通过用户交互行为或者浏览器行为（如路由跳转等）触发的，当此类行为会改变数据的时候可以通过 dispatch 发起一个 action ，如果是同步行为会直接通过 Reducers 改变 State，如果是异步行为（副作用）会先触发 Effects 然后流向 Reducers 最终改变 State，所以在 dva 中，数据流向非常清晰简洁，并且思路基本跟开源社区保持一致（也是来自于开源社区）。</p>
 <h2 id="models">Models</h2>
