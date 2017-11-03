@@ -20,9 +20,67 @@ openPages: ['/login'],
 
 ## 如何 abort 请求
 
+可能要通过 take 或者 takeEvery 来实现，暂时不投入确认。
+
 ## model 中定时轮询的实现与问题
 
 目前的实现方式是单独实现了一个管理状态的组建，接受相关参数进行轮寻。
+
+### 更新：
+
+通过 saga 的 fork 接口创建一个子任务，子任务中进行 for 循环，同时监听销毁资源的 effects，资源销毁时将 fork 的子任务取消掉。
+
+[参考资料](http://leonshi.com/redux-saga-in-chinese/docs/advanced/NonBlockingCalls.html)
+
+示例代码：
+
+```js
+// model.js
+// ...
+import { service } from '../services';
+
+function* keepalive({ call, put }) {
+  while (true) {
+    // do something ...
+    yield call(delay, 1000 * 20);
+  }
+}
+
+export default {
+
+  namespace: 'namespace',
+
+  state: {
+    data: null,
+    // state ...
+  },
+
+  subscriptions: {
+    // subscriptions ...
+  },
+
+  effects: {
+    *loginSucceed({ payload }, { put, fork, take, cancel, call }) {
+      const task = yield fork(keepalive, { put, call });
+      yield take(['logout', 'loginFaild']);
+      yield cancel(task);
+    },
+    *loginFaild({ payload }, { }) {
+      // do something ...
+    },
+    *logout({ payload }, { }) {
+      // do something ...
+    },
+  },
+
+  reducers: {
+    setData(state, action) {
+      return { ...state, data: action.payload };
+    },
+  },
+};
+```
+
 
 ##  多个异步 effects 时序控制问题
 
