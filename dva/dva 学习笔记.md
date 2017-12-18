@@ -142,3 +142,143 @@ dva@2.0 发布以后，dispatch 返回 Proimse，可以通过发起多个 action
 > dispatch(effectAction) => Proimse
 > 
 > 为了方便在视图层 dispatch action 并处理回调，比如 #175，我们在 dispatch 里针对 effect 类型的 action 做了返回 Promise 的特殊处理。
+
+## jwt 管理实现
+
+```js
+// src/model/app.js
+import { auth, delay } from '../utils';
+
+const aliveInterval = 10 * 60 * 1000;
+function* keepalive({ call, put }) {
+  while (true) {
+    // 判断 jwt 是否需要更新
+    const timeLeft = auth.getJwtTimeLeft();
+    if (timeLeft < aliveInterval) {
+      const res = yield call(updateJwt, { call, put });
+      if (false === res) {
+        // jwt 更新失败
+        return yield put({ type: 'loginFaild' });
+      }
+    }
+    yield call(delay, aliveInterval);
+  }
+}
+
+const updateJwt = async () => {
+  // 获取用户信息，用于更新jwt
+  const userInfo = getUserInfo();
+  const expired = auth.getUserLoginExpired();
+  // 发送 request 更新jwt
+  const response = await user.userLogin({ username: userInfo.username, password: userInfo.password, expired });
+  if (response.data) {
+    // 缓存jwt
+    saveJwt();
+    return true;
+  }
+  if (response.err) {
+    return false;
+  }
+};
+
+export default {
+  namespace: 'app',
+  state:  { /* ... */ },
+  subscriptions: { /* ... */ },
+  effects: {
+    // ...
+    *loginSucceed({ payload }, { put, fork, take, cancel, call }) {
+      const task = yield fork(keepalive, { put, call });
+      auth.setUpdateJwtHandle(updateJwt);
+      yield take(['logout', 'loginFaild']);
+      auth.setUpdateJwtHandle(null);
+      yield cancel(task);
+    },
+  },
+  reducers: { /* ... */ },
+};
+```
+
+```js
+// src/utils/auth.js
+let updateJwtHandle = null;
+const setUpdateJwtHandle = (handle) => {
+  updateJwtHandle = handle;
+};
+
+const getEffectiveJwt = () => {
+  // debugger;
+  return new Promise((resolve, reject) => {
+    const error = new Error('Unauthorized');
+    error.response = { status: 401 };
+    const jwt = getJwt();
+    if (jwt) {
+      return resolve(jwt);
+    } else if (!updateJwtHandle) {
+      return reject(error);
+    }
+    // debugger;
+    updateJwtHandle().then(() => {
+      return resolve(getJwt());
+    }).catch(() => {
+      return reject(error);
+    });
+  });
+};
+
+export default {
+  getEffectiveJwt,
+};
+```
+
+```js
+// src/utils/request.js
+import fetch from 'dva/fetch';
+import { getEffectiveJwt } from './auth';
+
+function request(resource, opts) {
+  // debugger;
+  return getEffectiveJwt().then((jwt) => {
+    return ajax(resource, opts, jwt);
+  }).catch(err => ({ err }));
+}
+
+function requestNotNecessaryJwt(resource, opts) {
+  return getEffectiveJwt().then((jwt) => {
+    return ajax(resource, opts, jwt);
+  }).catch(() => {
+    return ajax(resource, opts);
+  });
+}
+
+function requestWithoutJwt(resource, opts) {
+  return ajax(resource, opts);
+}
+
+function ajax(resource, opts, jwt) {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (jwt) {
+    headers.Authorization = `Bearer ${jwt}`;
+  }
+  const options = Object.assign({}, {
+    method: 'GET',
+    mode: 'cors',
+    headers,
+  }, opts);
+
+  return fetch(resource, options)
+    .then(checkStatus)
+    .then(parseText)
+    .then(parseJSON)
+    .then(data => ({ data }))
+    .catch(err => ({ err }));
+}
+
+export default {
+  request,
+  requestNotNecessaryJwt,
+  requestWithoutJwt,
+};
+```
